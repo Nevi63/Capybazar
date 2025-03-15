@@ -21,8 +21,9 @@ function Product() {
     <Card
     sx={{
       borderRadius: '20px',
-      width: "265px",
+      width: "280px",
       maxWidth: "100%",
+      height:'fit-content',
       m: 2,
       position: "relative",
       cursor: "pointer",
@@ -79,7 +80,7 @@ function Product() {
           <StarIcon sx={{ fontSize:'20px' }} />
         </Typography>
         <Typography variant="body" sx={{ color: "text.secondary", alignItems: "baseline", display: 'flex', justifyContent:'space-between' }}>
-          MXN 2200.00
+          MXN 220.00
           <Button size="small" color="secondary" variant="contained" sx={{ textTransform: "none", ml:1 }}>
             Agregar al carrito
           </Button>

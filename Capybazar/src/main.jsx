@@ -8,17 +8,17 @@ import { BrowserRouter } from "react-router-dom";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#FEC28E", // Naranja
+      main: "#FEC28E", 
     },
     secondary: {
-      main: "#9B3C00", // Verde
+      main: "#9B3C00", 
     },
     accent: {
-      main: "#C48271", // Verde
+      main: "#C48271", 
     },
   },
   typography: {
-    fontFamily: "Arial",
+    fontFamily: "Poppins",
   },
 });
 
