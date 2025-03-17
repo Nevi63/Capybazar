@@ -2,12 +2,14 @@ import React from 'react'
 import Navbar from '../../components/navbar/navbar'
 import Product from '../../components/product/product'
 import { Box } from "@mui/material";
-import ProductInformation from '../ProductInformation/productInformation';
+import ImageCarousel from '../../components/carousel/carousel';
+
 function home() {
   return (
     <div>
-      <Navbar userType='guest'></Navbar>
-      {/* <Box
+      <Navbar userType='vendedor'></Navbar>
+      <ImageCarousel></ImageCarousel>
+      <Box
         sx={{
           display: "flex",
           flexWrap: "wrap",
@@ -17,8 +19,13 @@ function home() {
         <Product />
         <Product />
         <Product />
-      </Box> */}
-      <ProductInformation></ProductInformation>
+        <Product />
+        <Product />
+        <Product />
+        <Product />
+        <Product />
+        <Product />
+      </Box>
     </div>
   )
 }

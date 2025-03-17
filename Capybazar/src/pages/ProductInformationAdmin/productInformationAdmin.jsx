@@ -2,10 +2,10 @@ import React from 'react'
 import { Typography, Button, Box } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import image from "../../assets/images/download.jpg";
-import AddIcon from '@mui/icons-material/Add';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Review from '../../components/review/review';
-function productInformationClient() {
+
+function productInformationAdmin() {
   return (
     <div style={{padding: "2rem"}}>
     <Box sx={{display:{sm: 'block', md: 'flex'}, justifyContent:'space-between', m:2}}>
@@ -34,10 +34,7 @@ function productInformationClient() {
           <StarIcon sx={{ fontSize:'20px' }} />
           </Typography>
           <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore nihil et corrupti rerum amet inventore deleniti, laboriosam minus dolor explicabo error recusandae cupiditate fugiat blanditiis voluptates, quisquam quos hic harum.</p>
-          <span>
-            <Button sx={{m:1}} color='accent' variant='contained'>Agregar al carrito</Button>
-            <Button sx={{m:1}} color='primary' variant='contained'> <FavoriteBorderIcon></FavoriteBorderIcon> Agregar a la wishlist</Button>
-          </span>
+    
       </Box>
          
 
@@ -51,16 +48,16 @@ function productInformationClient() {
       padding: '2rem'}}>
       <div style={{display:'flex', justifyContent:'space-between'}}>
           <h1 style={{fontWeight: 'normal', margin: 0}}>Reviews</h1>
-          <Button sx={{m:1}} color='accent' disabled variant='contained'><AddIcon></AddIcon> Hacer una review</Button>
       </div>
       <div>
-        <Review></Review>
-        <Review></Review>
-        <Review></Review>
+          <Review delete></Review>
+          <Review delete></Review>
+          <Review delete></Review>
+          
       </div>
     </Box>
   </div>
   )
 }
 
-export default productInformationClient
+export default productInformationAdmin
