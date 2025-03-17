@@ -56,7 +56,7 @@ function productListAdmin() {
   return (
     <Box sx={{p:5}}>
       <Box sx={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
-        <h1>Lista de categorías</h1>
+        <h1>Lista de productos</h1>
       </Box>
       <Paper sx={{ height: 400, width: '100%', margin: 'auto' }}>
         <DataGrid

@@ -13,7 +13,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import logo from "../../assets/logo_s.svg";
 import MenuIcon from '@mui/icons-material/Menu';
-
+import { useNavigate } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 const pagesByUserType = {
   vendedor: ['Productos', 'Inventario', 'Reportes'],
   admin: ['Productos', 'Categorías'],
@@ -26,7 +27,38 @@ const settingsGuest = ['Iniciar Sesión', 'Registrarse'];
 const settingsClient = ['Mi cuenta', 'Historial de compras', 'Lista de deseos', 'Cerrar Sesión'];
 const settingsSeller = ['Mi cuenta', 'Cerrar Sesión'];
 
+
 function Navbar({ userType }) {
+  const navigate = useNavigate();
+  const routeMap = {
+    'Productos': {
+      admin: '/productListAdmin',
+      default: '/productList'
+    },
+    'Inventario': '/inventory',
+    'Reportes': '/reports',
+    'Categorías': '/categoryList',
+    'Buscar': '/advancedSearch',
+    'Iniciar Sesión': '/login',
+    'Registrarse': '/signup',
+    'Mi cuenta': '/editProfile',
+    'Historial de compras': '/purchaseHistory',
+    'Lista de deseos': '/wishList',
+    'Cerrar Sesión': '/logout'
+  };
+
+  const navigateTo = (page) => {
+  const route = routeMap[page];
+    if (typeof route === 'string') {
+      navigate(route);
+    } else if (typeof route === 'object') {
+      navigate(userType === 'admin' ? route.admin : route.default);
+    }
+  };
+  const goToHome = () =>{
+    navigate('/');
+  } 
+
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const handleOpenUserMenu = (event) => {
@@ -49,20 +81,22 @@ function Navbar({ userType }) {
     <AppBar position="sticky" color='primary'>
       <Container maxWidth="none">
         <Toolbar disableGutters>
-          <Box
-            component="img"
-            src={logo}
-            alt="Logo"
-            sx={{ width: 50, height: 50, mr: 1, display: { xs: 'none', md: 'flex' } }}
-          />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            sx={{ mr: 2, fontSize: 25, color: 'inherit', textDecoration: 'none', display: { xs: 'none', md: 'flex' } }}
-          >
-            Capybazar
-          </Typography>
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              sx={{ width: 50, height: 50, mr: 1, display: { xs: 'none', md: 'flex',}, '&:hover': { cursor: 'pointer'}  }}
+              onClick={goToHome}
+            />
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              onClick={goToHome}
+              sx={{ mr: 2, fontSize: 25, color: 'inherit', textDecoration: 'none', display: { xs: 'none', md: 'flex' },'&:hover': { cursor: 'pointer'} }}
+            >
+              Capybazar
+            </Typography>
 
           <Box
             sx={{
@@ -92,7 +126,7 @@ function Navbar({ userType }) {
 
             {(userType === "vendedor" || userType === "admin") &&
               (userType === "vendedor" ? pagesSeller : pagesAdmin).map((page) => (
-                <Button key={page} sx={{ mx: 1,  my: 2, color: 'inherit',textTransform: 'none', fontSize: 16  }}>
+                <Button key={page} onClick={()=>{navigateTo(page)} } sx={{ mx: 1,  my: 2, color: 'inherit',textTransform: 'none', fontSize: 16  }}>
                   {page}
                 </Button>
               ))}
@@ -127,8 +161,11 @@ function Navbar({ userType }) {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pagesByUserType[userType]?.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center', color: 'inherit' }}>{page}</Typography>
+                <MenuItem key={page} onClick={() => {
+                  navigateTo(page);
+                  handleCloseNavMenu();
+                }}>
+                  <Typography   sx={{ textAlign: 'center', color: 'inherit' }}>{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -166,7 +203,7 @@ function Navbar({ userType }) {
               <ArrowDropDownIcon />
             </Button>
           </Tooltip>
-          {(userType === "cliente" || userType === "guest") && (
+          {(userType === "cliente") && (
             <Button color="secondary" variant="contained" sx={{ color: "white", mx: 2, p: 1}}>
               <ShoppingCartIcon />
             </Button>
@@ -182,7 +219,10 @@ function Navbar({ userType }) {
             onClose={handleCloseUserMenu}
           >
             {(userType === "guest" ? settingsGuest : userType === "cliente" ? settingsClient : settingsSeller).map((setting) => (
-              <MenuItem key={setting} onClick={handleCloseUserMenu}>
+              <MenuItem key={setting} onClick={() => {
+                navigateTo(setting);
+                handleCloseUserMenu();
+              }}>
                 <Typography textAlign="center">{setting}</Typography>
               </MenuItem>
             ))}

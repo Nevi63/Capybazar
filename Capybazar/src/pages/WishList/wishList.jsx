@@ -14,7 +14,7 @@ function wishList() {
   return (
     <Box sx={{px:15, py:5}}>
     <Box sx={{display:'flex', justifyContent:'space-between'}}>
-        <h1>Historial de compras</h1>
+        <h1>Lista de deseos</h1>
             
         <FormControl sx={{width:'250px', alignSelf:'center'}} color='secondary'>
             <InputLabel id="demo-simple-select-label">Filtros</InputLabel>
