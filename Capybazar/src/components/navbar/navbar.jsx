@@ -174,6 +174,7 @@ function Navbar({ userType }) {
             component="img"
             src={logo}
             alt="Logo"
+            onClick={goToHome}
             sx={{
                 width: 50,
                 height: 50,
@@ -184,6 +185,8 @@ function Navbar({ userType }) {
           variant="h5"
           noWrap
           component="a"
+          
+          onClick={goToHome}
           href="#app-bar-with-responsive-menu"
           sx={{
             mr: 2,
