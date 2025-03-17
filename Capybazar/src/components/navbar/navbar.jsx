@@ -14,7 +14,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import logo from "../../assets/logo_s.svg";
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
-
+import {Link} from 'react-router-dom';
 const pagesByUserType = {
   vendedor: ['Productos', 'Inventario', 'Reportes'],
   admin: ['Productos', 'Categorías'],
@@ -49,12 +49,15 @@ function Navbar({ userType }) {
 
   const navigateTo = (page) => {
   const route = routeMap[page];
-  if (typeof route === 'string') {
-    navigate(route);
-  } else if (typeof route === 'object') {
-    navigate(userType === 'admin' ? route.admin : route.default);
-  }
-};
+    if (typeof route === 'string') {
+      navigate(route);
+    } else if (typeof route === 'object') {
+      navigate(userType === 'admin' ? route.admin : route.default);
+    }
+  };
+  const goToHome = () =>{
+    navigate('/');
+  } 
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -78,20 +81,22 @@ function Navbar({ userType }) {
     <AppBar position="sticky" color='primary'>
       <Container maxWidth="none">
         <Toolbar disableGutters>
-          <Box
-            component="img"
-            src={logo}
-            alt="Logo"
-            sx={{ width: 50, height: 50, mr: 1, display: { xs: 'none', md: 'flex' } }}
-          />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            sx={{ mr: 2, fontSize: 25, color: 'inherit', textDecoration: 'none', display: { xs: 'none', md: 'flex' } }}
-          >
-            Capybazar
-          </Typography>
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              sx={{ width: 50, height: 50, mr: 1, display: { xs: 'none', md: 'flex',}, '&:hover': { cursor: 'pointer'}  }}
+              onClick={goToHome}
+            />
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              onClick={goToHome}
+              sx={{ mr: 2, fontSize: 25, color: 'inherit', textDecoration: 'none', display: { xs: 'none', md: 'flex' },'&:hover': { cursor: 'pointer'} }}
+            >
+              Capybazar
+            </Typography>
 
           <Box
             sx={{

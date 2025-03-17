@@ -21,6 +21,7 @@ import { Typography } from '@mui/material';
 import Logout from './pages/logout';
 import { GuestRoute, GuestClientRoute, ClientRoute, SellerRoute, AdminRoute, AuthenticatedRoute } from './RouteGuards'; // Importa tus guardias
 import Navbar from './components/navbar/navbar';
+import Reports from './pages/Reports/reports';
 function App() {
   const user = 'vendedor' 
   // cliente, guest, vendedor, admin
@@ -62,6 +63,7 @@ function App() {
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/productInformation" element={<ProductInformation />} />
           <Route path="/productList" element={<ProductList />} />
+          <Route path="/reports" element={<Reports />} />
         </Route>
 
         {/* admin */}

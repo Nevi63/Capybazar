@@ -13,18 +13,20 @@ const getUserRole = () => {
 export const GuestRoute = ({ children }) => {
   const role = getUserRole();
   if (!role) {
-    return <Outlet />; // Permite el renderizado de la ruta si es cliente
+    return <Outlet />;
   }
-  return <Navigate to="/" replace />; // Redirige a la página de inicio si no es cliente
+  return <Navigate to={role === 'admin' || role === 'vendedor' ? "/reports" : "/"} replace />;
 };
+
 // Componente para proteger rutas de guest y cliente
 export const GuestClientRoute = ({ children }) => {
   const role = getUserRole();
-  if (!role || role ==='cliente') {
-    return <Outlet />; // Permite el renderizado de la ruta si es cliente
+  if (!role || role === 'cliente') {
+    return <Outlet />;
   }
-  return <Navigate to="/" replace />; // Redirige a la página de inicio si no es cliente
+  return <Navigate to={role === 'admin' || role === 'vendedor' ? "/reports" : "/"} replace />;
 };
+
 
 // Componente para proteger rutas de cliente
 export const ClientRoute = ({ children }) => {
