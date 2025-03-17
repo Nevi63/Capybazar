@@ -118,7 +118,7 @@ function advancedSearch() {
                 disableSwap
             />
         </Box>
-        <Box sx={{p:3, display: 'flex', width: '100%', justifyContent: 'center'}}>
+        <Box sx={{p:1, display: 'flex', width: '100%', justifyContent: 'center'}}>
             <FormControl sx={{width:'180px', alignSelf:'center', backgroundColor: 'white'}} color='secondary' variant="filled">
                 <InputLabel id="demo-simple-select-label">Filtros</InputLabel>
                 <Select 
