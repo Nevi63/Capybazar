@@ -18,10 +18,11 @@ import CategoryList from './pages/CategoryList/CategoryList';
 import ProductInformationAdmin from './pages/ProductInformationAdmin/ProductInformationAdmin';
 import ProductListAdmin from './pages/ProductListAdmin/ProductListAdmin';
 import { Typography } from '@mui/material';
+import Logout from './pages/logout';
 import { GuestRoute, GuestClientRoute, ClientRoute, SellerRoute, AdminRoute, AuthenticatedRoute } from './RouteGuards'; // Importa tus guardias
 import Navbar from './components/navbar/navbar';
 function App() {
-  const user = 'admin' 
+  const user = 'vendedor' 
   // cliente, guest, vendedor, admin
   return (
     <>
@@ -43,6 +44,7 @@ function App() {
         {/* anyone logged in */}
         <Route element={<AuthenticatedRoute />}>
             <Route path="/editProfile" element={<EditProfile />} />
+            <Route path="/logout" element={<Logout />} />
         </Route>
 
         {/* client */}

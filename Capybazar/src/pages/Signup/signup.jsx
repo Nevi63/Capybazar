@@ -76,12 +76,14 @@ const handleSubmit = async (e) => {
         borderRadius: '10px',
         width:'35%'}}>
         <span style={{display: 'flex'}}>
-          <IconButton
-            sx={{
-              color:  "black" 
-            }}
-          > <ArrowBackIosIcon /> 
-          </IconButton>
+          <Link to="/">
+            <IconButton
+              sx={{
+                color:  "black" 
+              }}
+              > <ArrowBackIosIcon /> 
+            </IconButton>
+          </Link>
           <h1 style={{margin: '0', fontWeight:'normal', color:'inherit'}}>Registro</h1>
         </span>
         <form onSubmit={handleSubmit}>

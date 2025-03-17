@@ -12,7 +12,7 @@ const getUserRole = () => {
 // Componente para proteger rutas de guest
 export const GuestRoute = ({ children }) => {
   const role = getUserRole();
-  if (role === '') {
+  if (!role) {
     return <Outlet />; // Permite el renderizado de la ruta si es cliente
   }
   return <Navigate to="/" replace />; // Redirige a la página de inicio si no es cliente
@@ -20,7 +20,7 @@ export const GuestRoute = ({ children }) => {
 // Componente para proteger rutas de guest y cliente
 export const GuestClientRoute = ({ children }) => {
   const role = getUserRole();
-  if (role === ''|| role ==='cliente') {
+  if (!role || role ==='cliente') {
     return <Outlet />; // Permite el renderizado de la ruta si es cliente
   }
   return <Navigate to="/" replace />; // Redirige a la página de inicio si no es cliente

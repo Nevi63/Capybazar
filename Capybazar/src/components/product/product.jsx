@@ -4,21 +4,34 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import StarIcon from "@mui/icons-material/Star";
 import image from "../../assets/images/image.png";
-
+import {useNavigate} from 'react-router-dom'
 function Product() {
   const [liked, setLiked] = useState(false);
   const [hover, setHover] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
-
+  const navigate = useNavigate()
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - left) / width - 0.5) * 10; // Rango de -10° a 10°
     const y = -((e.clientY - top) / height - 0.5) * 10;
     setTilt({ x, y });
   };
-
+  const seeProduct = () => {
+    navigate('/productInfo');
+  }
+  const AddToCart = (event) => {
+    event.stopPropagation();
+    alert('agregar al carrito')
+  }
+  
+  const handleLike = (event) => {
+    event.stopPropagation(); // Evita que el evento suba a elementos padres
+    setLiked(!liked);
+  };
+  
   return (
     <Card
+    onClick={seeProduct}
     sx={{
       borderRadius: '20px',
       width: "280px",
@@ -54,7 +67,7 @@ function Product() {
 
       {(hover || liked) && (
         <IconButton
-          onClick={() => setLiked(!liked)}
+          onClick={handleLike}
           sx={{
             position: "absolute",
             top: 8,
@@ -81,7 +94,7 @@ function Product() {
         </Typography>
         <Typography variant="body" sx={{ color: "text.secondary", alignItems: "baseline", display: 'flex', justifyContent:'space-between' }}>
           MXN 220.00
-          <Button size="small" color="secondary" variant="contained" sx={{ textTransform: "none", ml:1 }}>
+          <Button onClick={(event) => AddToCart(event)}  size="small" color="secondary" variant="contained" sx={{ textTransform: "none", ml:1 }}>
             Agregar al carrito
           </Button>
         </Typography>
