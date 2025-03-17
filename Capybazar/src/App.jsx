@@ -22,12 +22,16 @@ import Logout from './pages/logout';
 import { GuestRoute, GuestClientRoute, ClientRoute, SellerRoute, AdminRoute, AuthenticatedRoute } from './RouteGuards'; // Importa tus guardias
 import Navbar from './components/navbar/navbar';
 import Reports from './pages/Reports/reports';
+import { useLocation } from 'react-router-dom';
 function App() {
-  const user = 'vendedor' 
+  const user = 'guest' 
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
+  
   // cliente, guest, vendedor, admin
   return (
     <>
-      {user && <Navbar userType={user}></Navbar>}
+       {!hideNavbar && user && <Navbar userType={user} />}
       <Routes>
         {/* guest & client*/}
         <Route  element={<GuestClientRoute />}>
