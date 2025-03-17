@@ -23,5 +23,9 @@ import './models/Order.js';
 import './models/Cart.js';
 import './models/Review.js';
 
+import userRoutes from './routes/users.js';
+app.use('/users', userRoutes);
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react';
 import { Box, TextField, Button, IconButton } from "@mui/material";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import bgImage from '../../assets/images/capybarabackground.jpg'
@@ -13,11 +13,47 @@ import { Link } from "react-router";
 
 function signup() {
 
-  const [age, setAge] = React.useState('');
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    userType: 'cliente',
+    birthdate: null
+});
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
+// Manejar cambios en los campos de texto
+const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+};
+
+// Manejar cambio de fecha
+const handleDateChange = (date) => {
+    setFormData({ ...formData, birthdate: date });
+};
+
+// Manejar envío del formulario
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+        const response = await fetch('http://localhost:5000/users/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Usuario registrado exitosamente');
+            setFormData({ firstName: '', lastName: '', email: '', password: '', userType: 'cliente', birthdate: null });
+        } else {
+            alert(data.message);
+        }
+    } catch (error) {
+        console.error('Error en el registro:', error);
+    }
+};
 
   return (
     <div
@@ -48,77 +84,50 @@ function signup() {
           </IconButton>
           <h1 style={{margin: '0', fontWeight:'normal', color:'inherit'}}>Registro</h1>
         </span>
-        <TextField
-          required
-          id="filled-required"
-          label="Nombres"
-          defaultValue=""
-          color="secondary"
-          variant="filled"
-          focused 
-        />
-        <TextField
-          required
-          id="filled-required"
-          label="Apellidos"
-          defaultValue=""
-          color="secondary"
-          variant="filled"
-          focused 
-        />
-        <TextField
-          required
-          id="filled-required"
-          label="Correo"
-          defaultValue=""
-          color="secondary"
-          variant="filled"
-          focused 
-        />
-        <TextField
-          id="filled-password-input"
-          label="Password"
-          type="password"
-          color="secondary"
-          autoComplete="current-password"
-          variant="filled"
-          focused 
-        />
+        <form onSubmit={handleSubmit}>
+          <TextField required fullWidth name="firstName" label="Nombres" variant="filled" color="secondary" focused onChange={handleChange} value={formData.firstName} />
+          <TextField required fullWidth name="lastName" label="Apellidos" variant="filled" color="secondary" focused onChange={handleChange} value={formData.lastName} />
+          <TextField required fullWidth type="email" name="email" label="Correo" variant="filled" color="secondary" focused onChange={handleChange} value={formData.email} />
+          <TextField required fullWidth type="password" name="password" label="Contraseña" variant="filled" color="secondary" focused onChange={handleChange} value={formData.password} />
         
-        <FormControl variant="filled" color="secondary" focused sx={{  minWidth: 120 }}>
-          <InputLabel id="demo-simple-select-filled-label">Tipo de usuario</InputLabel>
-          <Select
-            labelId="demo-simple-select-filled-label"
-            id="demo-simple-select-filled"
-            value={age}
-            onChange={handleChange}
-          >
-            <MenuItem value={10}>Vendedor</MenuItem>
-            <MenuItem value={20}>Cliente</MenuItem>
-          </Select>
-        </FormControl>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Select Date"
-            sx={{
-              marginTop: "1rem",
-              marginBottom: "0.5rem",
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": { borderColor: "brown" },
-                "&:hover fieldset": { borderColor: "saddlebrown" },
-                "&.Mui-focused fieldset": { borderColor: "sienna" },
-              },
-              "& .MuiInputLabel-root": { color: "brown" }, // Color normal
-              "& .MuiInputLabel-root.Mui-focused": { color: "sienna" }, // Color cuando está en focus
-              "& .MuiSvgIcon-root": { color: "brown" },
-            }}
-          />
-        </LocalizationProvider>
-        <Button
-        color='secondary'
-        variant='contained'
-        sx={{ my: 2, display: 'block',  textTransform: 'none', fontSize: 16  }}
-        >Registrarse</Button>
+          
+
+
+          <FormControl fullWidth variant="filled" color="secondary" focused sx={{ mt:2, minWidth: 120 }}>
+              <InputLabel>Tipo de usuario</InputLabel>
+              <Select name="userType" value={formData.userType} onChange={handleChange}>
+                  <MenuItem value="cliente">Cliente</MenuItem>
+                  <MenuItem value="vendedor">Vendedor</MenuItem>
+              </Select>
+          </FormControl>
+
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Fecha de Nacimiento"
+              value={formData.birthdate}
+              onChange={handleDateChange}
+              required
+              disableFuture
+              sx={{
+                marginTop: "1rem",
+                marginBottom: "0.5rem",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": { borderColor: "brown" },
+                  "&:hover fieldset": { borderColor: "saddlebrown" },
+                  "&.Mui-focused fieldset": { borderColor: "sienna" },
+                },
+                "& .MuiInputLabel-root": { color: "brown" }, // Color normal
+                "& .MuiInputLabel-root.Mui-focused": { color: "sienna" }, // Color cuando está en focus
+                "& .MuiSvgIcon-root": { color: "brown" },
+              }}
+            />
+          </LocalizationProvider>
+
+          <Button fullWidth type="submit" color='secondary' variant='contained' sx={{ my: 2, textTransform: 'none', fontSize: 16 }}>
+                        Registrarse
+          </Button>
+        </form>
+
         <span style={{color:"brown"}}>¿Ya tienes una cuenta? <Link to="/login" style={{color:"brown", textDecoration:"none", fontWeight:"bold"}}>Iniciar sesión</Link></span>
 
       </Box>
