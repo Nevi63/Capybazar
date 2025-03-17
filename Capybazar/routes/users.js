@@ -1,5 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
 const router = express.Router();
@@ -47,5 +48,36 @@ router.post('/create', async (req, res) => {
     }
 });
 
+
+// 📌 Endpoint: Iniciar sesión → POST /users/{userId}
+router.post('/:userId', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Verificar si el usuario existe
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Verificar la contraseña
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Contraseña incorrecta' });
+        }
+
+        // Generar un token JWT
+        const token = jwt.sign(
+            { userId: user._id, email: user.email, userType: user.userType },
+            process.env.JWT_SECRET,
+            { expiresIn: '2h' }
+        );
+
+        res.json({ message: 'Inicio de sesión exitoso', token, user });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    }
+});
 
 export default router;
