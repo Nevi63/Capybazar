@@ -24,14 +24,15 @@ import Navbar from './components/navbar/navbar';
 import Reports from './pages/Reports/reports';
 import { useLocation } from 'react-router-dom';
 function App() {
-  const user = 'guest' 
+  const userType = localStorage.getItem("userType") || 'guest';
+
   const location = useLocation();
   const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
   
   // cliente, guest, vendedor, admin
   return (
     <>
-       {!hideNavbar && user && <Navbar userType={user} />}
+       {!hideNavbar && userType && <Navbar userType={userType} />}
       <Routes>
         {/* guest & client*/}
         <Route  element={<GuestClientRoute />}>

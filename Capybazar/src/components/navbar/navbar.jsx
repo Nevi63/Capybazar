@@ -223,8 +223,8 @@ function Navbar({ userType }) {
           >
             {(userType === "guest" ? settingsGuest : userType === "cliente" ? settingsClient : settingsSeller).map((setting) => (
               <MenuItem key={setting} onClick={() => {
-                navigateTo(setting);
                 handleCloseUserMenu();
+                navigateTo(setting);
               }}>
                 <Typography textAlign="center">{setting}</Typography>
               </MenuItem>
