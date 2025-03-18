@@ -9,6 +9,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
+app.use(express.urlencoded({ extended: true })); // 🔹 Habilitar datos de formularios
 
 // Conectar a MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -25,6 +26,8 @@ import './models/Review.js';
 
 import userRoutes from './routes/users.js';
 app.use('/users', userRoutes);
+import categoryRoutes from './routes/categories.js';
+app.use('/categories', categoryRoutes);
 
 
 const PORT = process.env.PORT || 5000;
