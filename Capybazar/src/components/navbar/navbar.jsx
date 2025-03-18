@@ -1,5 +1,5 @@
 import { AppBar, Typography, TextField, InputAdornment, IconButton } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Menu from '@mui/material/Menu';
@@ -15,6 +15,8 @@ import logo from "../../assets/logo_s.svg";
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import {Link} from 'react-router-dom';
+import { set } from 'mongoose';
+
 const pagesByUserType = {
   vendedor: ['Productos', 'Inventario', 'Reportes'],
   admin: ['Productos', 'Categorías'],
@@ -28,8 +30,21 @@ const settingsClient = ['Mi cuenta', 'Historial de compras', 'Lista de deseos', 
 const settingsSeller = ['Mi cuenta', 'Cerrar Sesión'];
 
 
-function Navbar({ userType }) {
+function Navbar() {
   const navigate = useNavigate();
+  const [userType, setUserType] = useState('guest'); // Estado para almacenar el tipo de usuario
+
+  useEffect(() => {
+    // Leer el usuario desde localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUserType(parsedUser.userType); // Establecer el tipo de usuario
+    }else{
+      setUserType('guest');
+    }
+  }, []);
+
   const routeMap = {
     'Productos': {
       admin: '/productListAdmin',
@@ -48,13 +63,21 @@ function Navbar({ userType }) {
   };
 
   const navigateTo = (page) => {
-  const route = routeMap[page];
-    if (typeof route === 'string') {
-      navigate(route);
-    } else if (typeof route === 'object') {
-      navigate(userType === 'admin' ? route.admin : route.default);
-    }
+    const route = routeMap[page];
+      if (typeof route === 'string') {
+        navigate(route);
+      } else if (typeof route === 'object') {
+        navigate(userType === 'admin' ? route.admin : route.default);
+      }
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUserType('guest'); // Reiniciar el estado al cerrar sesión
+    navigate('/login');
+  };
+
   const goToHome = () =>{
     navigate('/');
   } 
