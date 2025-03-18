@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import Category from './modals/category';
 import Modal from '@mui/material/Modal';
-
+import DeleteCategory from './modals/deleteCategory';
 
 function categoryList() {
   const columns = [
@@ -22,7 +22,7 @@ function categoryList() {
                 <Button sx={{m:1}} variant="contained" color="success" onClick={handleOpenUpdate}>
                     <EditIcon />
                 </Button>
-                <Button sx={{m:1}} variant="contained" color="error" onClick={() => handleDelete(params.row.id)}>
+                <Button sx={{m:1}} variant="contained" color="error" onClick={handleOpenDelete}>
                     <DeleteIcon />
                 </Button>
                 
@@ -49,6 +49,11 @@ function categoryList() {
   const [openUpdate, setOpenUpdate] = useState(false);
   const handleOpenUpdate = () => setOpenUpdate(true);
   const handleCloseUpdate = () => setOpenUpdate(false);
+
+  const [openDelete, setOpenDelete] = useState(false);
+  const handleOpenDelete = () => setOpenDelete(true);
+  const handleCloseDelete = () => setOpenDelete(false);
+
   return (
     <Box sx={{p:3}}>
       <Box sx={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
@@ -66,7 +71,7 @@ function categoryList() {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '50%',
+            width: '30%',
             bgcolor: 'background.paper',
             border: '0',
             boxShadow: 24,
@@ -86,13 +91,33 @@ function categoryList() {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '50%',
+            width: '30%',
             bgcolor: 'background.paper',
             border: '0',
             boxShadow: 24,
             p: 4,
           }}>
           <Category></Category></Box>
+        </Modal>
+        <Modal
+          open={openDelete}
+          onClose={handleCloseDelete}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={{
+            position: 'absolute',
+            borderRadius:'10px',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '30%',
+            bgcolor: 'background.paper',
+            border: '0',
+            boxShadow: 24,
+            p: 4,
+          }}>
+          <DeleteCategory></DeleteCategory></Box>
         </Modal>
       </Box>
       <Paper sx={{ height: 400, width: '100%' }}>

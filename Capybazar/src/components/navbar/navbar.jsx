@@ -46,10 +46,7 @@ function Navbar() {
   }, []);
 
   const routeMap = {
-    'Productos': {
-      admin: '/productListAdmin',
-      default: '/productList'
-    },
+    'Productos': '/productList',
     'Inventario': '/inventory',
     'Reportes': '/reports',
     'Categorías': '/categoryList',
@@ -57,6 +54,7 @@ function Navbar() {
     'Iniciar Sesión': '/login',
     'Registrarse': '/signup',
     'Mi cuenta': '/editProfile',
+    'Carrito': '/cart',
     'Historial de compras': '/purchaseHistory',
     'Lista de deseos': '/wishList',
     'Cerrar Sesión': '/logout'
@@ -223,7 +221,9 @@ function Navbar() {
             </Button>
           </Tooltip>
           {(userType === "cliente") && (
-            <Button color="secondary" variant="contained" sx={{ color: "white", mx: 2, p: 1}}>
+            <Button onClick={() => {
+              navigateTo('Carrito');
+            }} color="secondary" variant="contained" sx={{ color: "white", mx: 2, p: 1}}>
               <ShoppingCartIcon />
             </Button>
           )}

@@ -9,7 +9,7 @@ function Category(prop) {
       <TextField
         required
         id="filled-required"
-        label="Correo"
+        label="Categoría"
         defaultValue=""
         color="secondary"
         variant="filled"

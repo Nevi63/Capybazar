@@ -53,30 +53,38 @@ function App() {
             <Route path="/logout" element={<Logout />} />
         </Route>
 
-        {/* client */}
-        <Route element={<ClientRoute />}>
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/wishlist" element={<WishList />} />
-          <Route path="/purchaseHistory" element={<PurchaseHistory />} />
-          <Route path="/checkOut" element={<CheckOut />} />
-        </Route>
+        {/* client */}{
+          userType==='cliente' &&
+          <Route element={<ClientRoute />}>
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/wishlist" element={<WishList />} />
+            <Route path="/purchaseHistory" element={<PurchaseHistory />} />
+            <Route path="/checkOut" element={<CheckOut />} />
+          </Route>
+        }
 
-        {/* seller */}
-        <Route element={<SellerRoute />}>
-          <Route path="/createProduct" element={<CreateProduct />} />
-          <Route path="/editProduct" element={<CreateProduct />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/productInformation" element={<ProductInformation />} />
-          <Route path="/productList" element={<ProductList />} />
+        {/* seller */}{
+          userType === 'vendedor' &&
+          <Route element={<SellerRoute />}>
+            <Route path="/createProduct" element={<CreateProduct />} />
+            <Route path="/editProduct" element={<CreateProduct />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/productInfo" element={<ProductInformation />} />
+            <Route path="/productList" element={<ProductList />} />
+            <Route path="/reports" element={<Reports />} />
+          </Route>
+        }
+
+        {/* admin */}{
+          userType === 'admin' &&
+          <Route element={<AdminRoute />}>
           <Route path="/reports" element={<Reports />} />
-        </Route>
+            <Route path="/categoryList" element={<CategoryList />} />
+            <Route path="/productList" element={<ProductListAdmin />} />
+            <Route path="/reviewManagement" element={<ProductInformationAdmin />} />
+          </Route>
 
-        {/* admin */}
-        <Route element={<AdminRoute />}>
-          <Route path="/categoryList" element={<CategoryList />} />
-          <Route path="/productListAdmin" element={<ProductListAdmin />} />
-          <Route path="/reviewManagement" element={<ProductInformationAdmin />} />
-        </Route>
+        }
 
         <Route path="*" element={<Typography sx={{ p: 5 }} variant="h4">Página no encontrada</Typography>} />
       </Routes>
