@@ -32,6 +32,7 @@ function login() {
           if (response.ok) {
               alert('Inicio de sesión exitoso');
               localStorage.setItem('token', data.token); // Guardar el token
+              localStorage.setItem('user', JSON.stringify(data.user)); // Guardar el usuario
               localStorage.setItem('userType', data.user.userType); // Guardar el token
               navigate('/'); // Redirigir al home o dashboard
           } else {

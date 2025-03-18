@@ -8,9 +8,9 @@ function Logout() {
     // Elimina el usuario del localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('userType');
-
+    localStorage.removeItem('user');
     // Redirige al usuario a la página de inicio
-    navigate('/');
+    navigate('/login');
   }, [navigate]);
 
   return <p>Cerrando sesión...</p>; // Puedes mostrar un mensaje mientras se cierra la sesión

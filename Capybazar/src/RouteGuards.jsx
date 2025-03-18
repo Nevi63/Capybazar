@@ -5,8 +5,8 @@ import { Navigate, Outlet } from 'react-router-dom';
 const getUserRole = () => {
   // Aquí deberías obtener el rol del usuario desde tu estado de autenticación o backend
   // Ejemplo simulado:
-  const user = localStorage.getItem('userType');
-  return user ? user.role : null;
+  const user = JSON.parse(localStorage.getItem('user'));
+  return user ? user.userType : null;
 };
 
 // Componente para proteger rutas de guest

@@ -71,13 +71,6 @@ function Navbar() {
       }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUserType('guest'); // Reiniciar el estado al cerrar sesión
-    navigate('/login');
-  };
-
   const goToHome = () =>{
     navigate('/');
   } 
@@ -246,8 +239,8 @@ function Navbar() {
           >
             {(userType === "guest" ? settingsGuest : userType === "cliente" ? settingsClient : settingsSeller).map((setting) => (
               <MenuItem key={setting} onClick={() => {
-                handleCloseUserMenu();
                 navigateTo(setting);
+                handleCloseUserMenu();
               }}>
                 <Typography textAlign="center">{setting}</Typography>
               </MenuItem>
