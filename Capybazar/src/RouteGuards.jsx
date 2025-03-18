@@ -5,7 +5,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 const getUserRole = () => {
   // Aquí deberías obtener el rol del usuario desde tu estado de autenticación o backend
   // Ejemplo simulado:
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = localStorage.getItem('userType');
   return user ? user.role : null;
 };
 
@@ -57,9 +57,9 @@ export const AdminRoute = ({ children }) => {
 
 // Componente para proteger rutas de usuarios autenticados
 export const AuthenticatedRoute = ({ children }) => {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = localStorage.getItem('userType');
     if (user) {
         return <Outlet />;
     }
-    return <Navigate to="/login" replace />; // Redirige a login si no esta autenticado
+    return <Navigate to="/" replace />; // Redirige a login si no esta autenticado
 };

@@ -7,7 +7,8 @@ function Logout() {
   useEffect(() => {
     // Elimina el usuario del localStorage
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('userType');
+
     // Redirige al usuario a la página de inicio
     navigate('/');
   }, [navigate]);

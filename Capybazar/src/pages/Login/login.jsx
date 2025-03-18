@@ -32,7 +32,7 @@ function login() {
           if (response.ok) {
               alert('Inicio de sesión exitoso');
               localStorage.setItem('token', data.token); // Guardar el token
-              localStorage.setItem('user', JSON.stringify(data.user)); // Guardar el usuario
+              localStorage.setItem('userType', data.user.userType); // Guardar el token
               navigate('/'); // Redirigir al home o dashboard
           } else {
               setError(data.message);
@@ -64,12 +64,14 @@ function login() {
         borderRadius: '10px',
         width:'35%'}}>
         <span style={{display: 'flex'}}>
-          <IconButton
-            sx={{
-              color:  "black" 
-            }}
-          > <ArrowBackIosIcon /> 
-          </IconButton>
+          <Link to='/'>
+            <IconButton
+              sx={{
+                color:  "black" 
+              }}
+              > <ArrowBackIosIcon /> 
+            </IconButton>
+          </Link>
           <h1 style={{margin: '0', fontWeight:'normal', color:'inherit'}}>Inicio de sesión</h1>
         </span>
 
