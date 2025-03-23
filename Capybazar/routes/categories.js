@@ -68,12 +68,13 @@ router.post('/create', authMiddleware, async (req, res) => {
 router.put('/:categoryId', authMiddleware, async (req, res) => {
     try {
         const { nombre } = req.body;
-
+        const { categoryId } = req.params;
+        
         if (!nombre) {
             return res.status(400).json({ message: 'El nombre de la categoría es obligatorio.' });
         }
 
-        const updatedCategory = await Category.findByIdAndUpdate(req.params.categoryId, { nombre }, { new: true });
+        const updatedCategory = await Category.findByIdAndUpdate(categoryId, { name: nombre }, { new: true });
 
         if (!updatedCategory) {
             return res.status(404).json({ message: 'Categoría no encontrada' });

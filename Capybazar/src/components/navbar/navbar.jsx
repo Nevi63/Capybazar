@@ -14,8 +14,6 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import logo from "../../assets/logo_s.svg";
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
-import {Link} from 'react-router-dom';
-import { set } from 'mongoose';
 
 const pagesByUserType = {
   vendedor: ['Productos', 'Inventario', 'Reportes'],

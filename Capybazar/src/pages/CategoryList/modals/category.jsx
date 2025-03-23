@@ -1,49 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button } from "@mui/material";
 
-function category({ action, onClose, onCategoryCreated }) {
+function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
     const [nombre, setNombre] = useState('');
+
+    useEffect(() => {
+        if (action === 'edit' && nombreProp) {
+          setNombre(nombreProp);
+          console.log(id, nombreProp)
+        }
+    }, [action, nombreProp]);
 
     const handleChange = (e) => {
         setNombre(e.target.value);
     };
 
     const handleSubmit = async (e) => {
-      e.preventDefault();
-  
-      if (!nombre.trim()) {
-          alert("El nombre de la categoría no puede estar vacío.");
-          return;
-      }
-  
-      try {
-          const token = localStorage.getItem('token'); 
-          console.log("Token enviado:", token); // 👀 Verificar token
-          console.log("Enviando datos al backend:", JSON.stringify({ nombre })); // 👀 Verificar datos antes de enviarlos
-  
-          const response = await fetch('http://localhost:5000/categories/create', {
-              method: 'POST',
-              headers: { 
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({ nombre }) // 🔹 Asegurar que se envíe como JSON válido
-          });
-  
-          const data = await response.json();
-          console.log("Respuesta del servidor:", data); // 👀 Depuración
-  
-          if (response.ok) {
-              alert('Categoría creada exitosamente');
-              setNombre('');
-              onCategoryCreated();
-              onClose();
-          } else {
-              alert(data.message);
-          }
-      } catch (error) {
-          console.error('Error al crear la categoría:', error);
-      }
+        e.preventDefault();
+        
+        if (!nombre.trim()) {
+            alert("El nombre de la categoría no puede estar vacío.");
+            return;
+        }
+    
+        try {
+            const token = localStorage.getItem('token'); 
+            console.log("Token enviado:", token); // 👀 Verificar token
+            console.log("Enviando datos al backend:", JSON.stringify({ nombre })); // 👀 Verificar datos antes de enviarlos
+            
+            
+            const url = action === 'edit' 
+            ? `http://localhost:5000/categories/${id}`
+            : 'http://localhost:5000/categories/create';
+
+            const method = action === 'edit' ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ nombre }) // 🔹 Asegurar que se envíe como JSON válido
+            });
+    
+            const data = await response.json();
+            console.log("Respuesta del servidor:", data); // 👀 Depuración
+    
+            if (response.ok) {
+                alert(`Categoría ${action === 'edit' ? 'editada' : 'creada'} exitosamente`);
+                setNombre('');
+                onCategoryCreated();
+                onClose();
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            console.error('Error al crear la categoría:', error);
+        }
   };
   
   
