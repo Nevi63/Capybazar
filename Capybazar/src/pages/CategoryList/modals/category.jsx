@@ -1,24 +1,71 @@
-import React from 'react'
-import { Box, TextField, Button, IconButton } from "@mui/material";
+import React, { useState } from 'react';
+import { Box, TextField, Button } from "@mui/material";
 
-function Category(prop) {
+function category({ action, onClose, onCategoryCreated }) {
+    const [nombre, setNombre] = useState('');
 
-  return (
-    <Box sx={{display:'flex', flexDirection:'column', gap:2, p:2}}>
-      {prop.action === 'create' ?( <h1>Crear categoría</h1>):(<h1>Editar categoría</h1>)}
-      <TextField
-        required
-        id="filled-required"
-        label="Categoría"
-        defaultValue=""
-        color="secondary"
-        variant="filled"
-        focused 
-      />
-      <Button sx={{alignSelf:'center', height:'40px'}} color='primary' variant='contained'>{prop.action == 'create' ?( <p>Crear categoría</p>):(<p>Editar categoría</p>)}</Button>
-      
-    </Box>
-  )
+    const handleChange = (e) => {
+        setNombre(e.target.value);
+    };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+  
+      if (!nombre.trim()) {
+          alert("El nombre de la categoría no puede estar vacío.");
+          return;
+      }
+  
+      try {
+          const token = localStorage.getItem('token'); 
+          console.log("Token enviado:", token); // 👀 Verificar token
+          console.log("Enviando datos al backend:", JSON.stringify({ nombre })); // 👀 Verificar datos antes de enviarlos
+  
+          const response = await fetch('http://localhost:5000/categories/create', {
+              method: 'POST',
+              headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ nombre }) // 🔹 Asegurar que se envíe como JSON válido
+          });
+  
+          const data = await response.json();
+          console.log("Respuesta del servidor:", data); // 👀 Depuración
+  
+          if (response.ok) {
+              alert('Categoría creada exitosamente');
+              setNombre('');
+              onCategoryCreated();
+              onClose();
+          } else {
+              alert(data.message);
+          }
+      } catch (error) {
+          console.error('Error al crear la categoría:', error);
+      }
+  };
+  
+  
+
+    return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
+            <h1>{action === 'create' ? 'Crear categoría' : 'Editar categoría'}</h1>
+            <TextField
+                required
+                label="Nombre de la categoría"
+                fullWidth
+                variant="filled"
+                color="secondary"
+                focused
+                value={nombre}
+                onChange={handleChange}
+            />
+            <Button sx={{ alignSelf: 'center', height: '40px' }} color='primary' variant='contained' onClick={handleSubmit}>
+                {action === 'create' ? 'Crear categoría' : 'Editar categoría'}
+            </Button>
+        </Box>
+    );
 }
 
-export default Category
+export default category;
