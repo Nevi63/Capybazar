@@ -2,8 +2,12 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import multer from 'multer';
 
 const router = express.Router();
+// Configuración de multer para guardar en memoria
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // 📌 Endpoint: Crear usuario (Registro) → POST /users/create
 router.post('/create', async (req, res) => {
@@ -48,7 +52,6 @@ router.post('/create', async (req, res) => {
     }
 });
 
-
 // 📌 Endpoint: Iniciar sesión → POST /users/{userId}
 router.post('/:userId', async (req, res) => {
     try {
@@ -79,5 +82,116 @@ router.post('/:userId', async (req, res) => {
         res.status(500).json({ message: 'Error en el servidor', error: error.message });
     }
 });
+
+// 📌 Obtener usuario por ID → GET /users/:userId
+router.get('/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findById(userId).select('-password');  // Excluir contraseña
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    }
+});
+
+
+// 📌 Cambiar foto de perfil → PUT /users/:userId/photo
+router.put('/photo/:userId', upload.single('profilePicture'), async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'La imagen es obligatoria.' });
+        }
+
+        const mimeType = req.file.mimetype;  
+        const extension = mimeType.split('/')[1];  
+
+        // Convertir la imagen a base64
+        const base64Image = `data:${mimeType};base64,${req.file.buffer.toString('base64')}`;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { profilePicture: base64Image }, 
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json({ 
+            message: 'Foto de perfil actualizada', 
+            user: updatedUser,
+            fileType: extension 
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    }
+});
+
+
+// 📌 Actualizar datos del usuario → PUT /users/:userId
+router.put('/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { firstName, lastName, birthdate } = req.body;
+
+        // Si hay fecha, ajustar zona horaria
+        const birthdateObj = birthdate ? new Date(birthdate) : undefined;
+
+        if (birthdateObj) {
+            // Ajuste para que la fecha se guarde con la zona horaria correcta
+            const localDate = new Date(birthdateObj.getTime() + birthdateObj.getTimezoneOffset() * 60000);
+            
+            
+            if (localDate > new Date()) {
+                return res.status(400).json({ message: 'La fecha de nacimiento no puede ser mayor a hoy.' });
+            }
+
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                { firstName, lastName, birthdate: localDate },
+                { new: true }
+            );
+
+            res.json({ message: 'Datos actualizados correctamente', user: updatedUser });
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    }
+});
+
+// 📌 Cambiar contraseña → PUT /users/password/:userId
+router.put('/password/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { newPassword } = req.body;
+
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        user.password = hashedPassword;
+        await user.save();
+
+        res.json({ message: 'Contraseña actualizada exitosamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    }
+});
+
 
 export default router;
