@@ -7,9 +7,10 @@ import cors from 'cors';
 const app = express();
 
 // Middleware
-app.use(express.json());
 app.use(cors());
-app.use(express.urlencoded({ extended: true })); // 🔹 Habilitar datos de formularios
+app.use(express.json({ limit: '10mb' })); // 🟢 Aumenta el límite a 10 megas
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 
 // Conectar a MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -28,6 +29,8 @@ import userRoutes from './routes/users.js';
 app.use('/users', userRoutes);
 import categoryRoutes from './routes/categories.js';
 app.use('/categories', categoryRoutes);
+import productRoutes from './routes/products.js';
+app.use('/products', productRoutes);
 
 
 const PORT = process.env.PORT || 5000;

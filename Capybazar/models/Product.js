@@ -9,7 +9,9 @@ const ProductSchema = new mongoose.Schema({
     description: String,
     image: String, // Guardaremos imágenes en Base64 o URL
     rating: { type: Number, default: 0 },
-    reviews: { type: Array, default: [] }
+    reviews: { type: Array, default: [] },
+    createdAt: { type: Date, default: Date.now },
+    deletedAt: Date
 });
 
 export default mongoose.model('Product', ProductSchema);

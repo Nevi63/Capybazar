@@ -10,13 +10,13 @@ import EditProfile from './pages/EditProfile/EditProfile';
 import AdvancedSearch from './pages/AdvancedSearch/advancedSearch';
 import CheckOut from './pages/CheckOut/CheckOut';
 import ProductInformationClient from './pages/ProductInformationClient/ProductInformationClient';
-import CreateProduct from './pages/CreateProduct/CreateProduct';
+import CreateProduct from './pages/CreateProduct/createProduct';
 import Inventory from './pages/Inventory/Inventory';
 import ProductInformation from './pages/ProductInformation/ProductInformation';
-import ProductList from './pages/ProductList/ProductList';
-import CategoryList from './pages/CategoryList/CategoryList';
+import ProductList from './pages/ProductList/productList';
+import CategoryList from './pages/CategoryList/categoryList';
 import ProductInformationAdmin from './pages/ProductInformationAdmin/ProductInformationAdmin';
-import ProductListAdmin from './pages/ProductListAdmin/ProductListAdmin';
+import ProductListAdmin from './pages/ProductListAdmin/productListAdmin';
 import { Typography } from '@mui/material';
 import Logout from './pages/logout';
 import { GuestRoute, GuestClientRoute, ClientRoute, SellerRoute, AdminRoute, AuthenticatedRoute } from './RouteGuards'; // Importa tus guardias

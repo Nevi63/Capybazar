@@ -1,66 +1,95 @@
-import React from 'react'
-import { Button, Box } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { Button, Box, Paper } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { DataGrid } from '@mui/x-data-grid';
-import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { DataGrid } from '@mui/x-data-grid';
 
 function productListAdmin() {
-    const columns = [
-      { field: 'nombre', headerName: 'Nombre', width: 200 },
-      { field: 'precio', headerName: 'Precio', width: 90, type: 'number'},
-      {
-        field: 'categoria',
-        headerName: 'Categoría',
-        width: 150,
-      },
-      {
-        field: 'vendedor',
-        headerName: 'Vendedor',
-        width: 150,
-      },
-      {
-        field: 'descripcion',
-        headerName: 'Descripcion',
-        width: 500,
-      },
-      {
-        field: 'acciones',
-        headerName: 'Acciones',
-        sortable: false,
-        width: '200',
-        renderCell: (params) => (
-            <div>
-                <Button sx={{m:1}} variant="contained" color="error" onClick={() => handleDelete(params.row.id)}>
-                    <DeleteIcon />
-                </Button>
-                <Button sx={{m:1}} variant="contained" color="primary" onClick={() => handleMore(params.row.id)}>
-                    <MoreVertIcon />
-                </Button>
-            </div>
-        ),
+  const [products, setProducts] = useState([]);
+  const paginationModel = { page: 0, pageSize: 5 };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/products/admin', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      const data = await res.json();
+      console.log("📦 Productos recibidos:", data); // 👈 VERIFICAMOS
+      setProducts(data);
+    } catch (error) {
+      console.error("❌ Error al obtener productos:", error);
+    }
+  };
+  
+
+  const handleDelete = (id) => {
+    // Por ahora puedes mostrar confirmación
+    alert(`Eliminar producto con ID: ${id}`);
+  };
+
+  const handleMore = (id) => {
+    alert(`Ver más del producto con ID: ${id}`);
+  };
+
+  const columns = [
+    { field: 'name', headerName: 'Nombre', width: 200 },
+    { field: 'price', headerName: 'Precio', width: 90, type: 'number' },
+    {
+      field: 'category',
+      headerName: 'Categoría',
+      width: 150,
+      renderCell: (params) => {
+        const catName = params?.row?.categoryId?.name;
+        return catName || 'Sin categoría';
+      }
     },
-    ];
-    
-    const rows = [
-      { id: 1, nombre: 'Luna Snow', precio: 100, categoria:'huh', vendedor:'tilin', descripcion: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde ipsa consectetur numquam doloribus libero fuga quod? Quis ex voluptatum neque." },
-      { id: 2, nombre: 'Mantis', precio: 200,  categoria:'si', vendedor:'tilin', descripcion: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde ipsa consectetur numquam doloribus libero fuga quod? Quis ex voluptatum neque." },
-      { id: 3, nombre: 'Adam Warlock', precio: 120, categoria:'no', vendedor:'tilin', descripcion: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde ipsa consectetur numquam doloribus libero fuga quod? Quis ex voluptatum neque." },
-      { id: 4, nombre: 'Rocket', precio: 235, categoria:'huh', vendedor:'tilin', descripcion: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde ipsa consectetur numquam doloribus libero fuga quod? Quis ex voluptatum neque." },
-      { id: 5, nombre: 'Invisible Woman', precio: 58, categoria:'no', vendedor:'tilin', descripcion: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde ipsa consectetur numquam doloribus libero fuga quod? Quis ex voluptatum neque." },
-      { id: 6, nombre: 'Loki', precio: 160, categoria:'si', vendedor:'tilin', descripcion: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde ipsa consectetur numquam doloribus libero fuga quod? Quis ex voluptatum neque." },
-      { id: 7, nombre: 'Cloak & Dagger', precio: 50, categoria:'huh', vendedor:'tilin', descripcion: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde ipsa consectetur numquam doloribus libero fuga quod? Quis ex voluptatum neque." },
-    ];
-    
-    const paginationModel = { page: 0, pageSize: 5 };
+    {
+      field: 'seller',
+      headerName: 'Vendedor',
+      width: 180,
+      renderCell: (params) => {
+        const user = params?.row?.userId;
+        return user ? `${user.firstName} ${user.lastName}` : 'Desconocido';
+      }
+    },
+    {
+      field: 'description',
+      headerName: 'Descripción',
+      width: 500,
+    },
+    {
+      field: 'actions',
+      headerName: 'Acciones',
+      sortable: false,
+      width: 200,
+      renderCell: (params) => (
+        <div>
+          <Button sx={{ m: 1 }} variant="contained" color="error" onClick={() => handleDelete(params.row._id)}>
+            <DeleteIcon />
+          </Button>
+          <Button sx={{ m: 1 }} variant="contained" color="primary" onClick={() => handleMore(params.row._id)}>
+            <MoreVertIcon />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <Box sx={{p:5}}>
-      <Box sx={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
+    <Box sx={{ p: 5 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <h1>Lista de productos</h1>
       </Box>
-      <Paper sx={{ height: 400, width: '100%', margin: 'auto' }}>
+      <Paper sx={{ height: 500, width: '100%', margin: 'auto' }}>
         <DataGrid
-          rows={rows}
+          rows={products.map((p) => ({ ...p, id: p._id }))}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[5, 10]}
@@ -68,7 +97,7 @@ function productListAdmin() {
         />
       </Paper>
     </Box>
-  )
+  );
 }
 
-export default productListAdmin
+export default productListAdmin;
