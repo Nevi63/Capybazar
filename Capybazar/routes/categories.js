@@ -7,7 +7,7 @@ const router = express.Router();
 // 📌 Obtener todas las categorías → GET /categories
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        const categories = await Category.find();
+        const categories = await Category.find({ deletedAt: null });
         res.json(categories);
     } catch (error) {
         res.status(500).json({ message: 'Error en el servidor', error: error.message });
@@ -89,13 +89,22 @@ router.put('/:categoryId', authMiddleware, async (req, res) => {
 // 📌 Eliminar una categoría → DELETE /categories/{categoryId}
 router.delete('/:categoryId', authMiddleware, async (req, res) => {
     try {
-        const deletedCategory = await Category.findByIdAndDelete(req.params.categoryId);
+        const categoryId = req.params.categoryId;
 
-        if (!deletedCategory) {
+        // Buscar la categoría por ID
+        const category = await Category.findById(categoryId);
+
+        if (!category) {
             return res.status(404).json({ message: 'Categoría no encontrada' });
         }
 
-        res.json({ message: 'Categoría eliminada exitosamente' });
+        // Marcar como eliminada (baja lógica)
+        category.deletedAt = new Date();
+
+        // Guardar los cambios
+        await category.save();
+
+        res.json({ message: 'Categoría marcada como eliminada', category });
     } catch (error) {
         res.status(500).json({ message: 'Error en el servidor', error: error.message });
     }
