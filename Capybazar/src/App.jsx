@@ -36,13 +36,14 @@ function App() {
        {!hideNavbar && userType && <Navbar userType={userType} />}
       <Routes>
         {/* guest & client*/}
-        {userType === 'cliente' || userType ==='guest' &&
-          <Route  element={<GuestClientRoute />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/advancedSearch" element={<AdvancedSearch />} />
-            <Route path="/productInfo/:productId" element={<ProductInformationClient />} />
-          </Route>
-        }
+        {(userType === 'cliente' || userType === 'guest') && (
+            <Route element={<GuestClientRoute />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/advancedSearch" element={<AdvancedSearch />} />
+                <Route path="/productInfo/:productId" element={<ProductInformationClient />} />
+            </Route>
+        )}
+
 
         {/* guest */}
         <Route element={<GuestRoute />}>
@@ -59,7 +60,6 @@ function App() {
         {/* client */}{
           userType==='cliente' &&
           <Route element={<ClientRoute />}>
-            <Route path="/" element={<Home />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<WishList />} />
             <Route path="/purchaseHistory" element={<PurchaseHistory />} />
