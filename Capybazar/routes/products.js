@@ -39,7 +39,7 @@ router.get('/', authMiddleware, async (req, res) => {
     try {
       const userId = req.user.userId; // obtenido del token
   
-      const products = await Product.find({ userId })
+      const products = await Product.find({ userId }).find({ deletedAt: null })
         .populate('categoryId', 'name') // opcional: trae el nombre de la categoría
         .sort({ createdAt: -1 });
   
@@ -64,7 +64,90 @@ router.get('/admin', authMiddleware, async (req, res) => {
       res.status(500).json({ message: 'Error en el servidor', error: error.message });
     }
   });
+
+// 📌 Obtener información de un producto por ID → GET /products/:productId
+router.get('/:productId', authMiddleware, async (req, res) => {
+  try {
+      const { productId } = req.params;
+
+      const product = await Product.findById(productId)
+          .populate('categoryId', 'name')  // Agrega nombre de la categoría
+          .populate('userId', 'firstName lastName');  // Agrega info del creador
+
+      if (!product) {
+          return res.status(404).json({ message: 'Producto no encontrado' });
+      }
+
+      res.json(product);
+
+  } catch (error) {
+      console.error("❌ Error al obtener el producto:", error);
+      res.status(500).json({ message: 'Error en el servidor', error: error.message });
+  }
+});
   
-  
+  // 📌 Editar un producto solo si pertenece al usuario → PUT /products/:productId
+router.put('/:productId', authMiddleware, async (req, res) => {
+  try {
+      const { productId } = req.params;
+      const userId = req.user.userId;  // ID del usuario autenticado
+      const { name, price, stock, description, image, categoryId } = req.body;
+
+      // Buscar el producto y verificar si pertenece al usuario autenticado
+      const product = await Product.findById(productId);
+
+      if (!product) {
+          return res.status(404).json({ message: 'Producto no encontrado' });
+      }
+
+      if (product.userId.toString() !== userId) {
+          return res.status(403).json({ message: 'No tienes permiso para editar este producto' });
+      }
+
+      // Actualizar solo si pertenece al usuario
+      const updatedProduct = await Product.findByIdAndUpdate(
+          productId,
+          { name, price, stock, description, image, categoryId },
+          { new: true }
+      );
+
+      res.json({ message: 'Producto actualizado', product: updatedProduct });
+
+  } catch (error) {
+      console.error("❌ Error al actualizar producto:", error);
+      res.status(500).json({ message: 'Error en el servidor', error: error.message });
+  }
+});
+
+// 📌 Eliminar un producto (baja lógica) → DELETE /products/:productId
+router.delete('/:productId', authMiddleware, async (req, res) => {
+  try {
+      const { productId } = req.params;
+      const userId = req.user.userId;  // ID del usuario autenticado
+
+      // Buscar el producto
+      const product = await Product.findById(productId);
+
+      if (!product) {
+          return res.status(404).json({ message: 'Producto no encontrado' });
+      }
+
+      // Verificar que el producto pertenece al usuario autenticado
+      if (product.userId.toString() !== userId) {
+          return res.status(403).json({ message: 'No tienes permiso para eliminar este producto' });
+      }
+
+      // Baja lógica: asignar la fecha actual a `deletedAt`
+      product.deletedAt = new Date();
+      await product.save();
+
+      res.json({ message: 'Producto eliminado (baja lógica)', product });
+
+  } catch (error) {
+      console.error("❌ Error al eliminar producto:", error);
+      res.status(500).json({ message: 'Error en el servidor', error: error.message });
+  }
+});
+
 
 export default router;

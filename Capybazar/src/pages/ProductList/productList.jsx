@@ -2,16 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
+import { Box, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
-
+import Modal from '@mui/material/Modal';
+import DeleteProduct from './deleteProduct/deleteProduct';
 function productList() {
   const [products, setProducts] = useState([]);
   const paginationModel = { page: 0, pageSize: 5 };
   const navigate = useNavigate();
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);  // Estado para la categoría seleccionada
+
+  const handleOpenDelete  = (product) => {
+    setSelectedProduct(product);
+    setOpenDelete(true);
+  };
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+    setSelectedProduct(null);
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -33,8 +45,8 @@ function productList() {
   };
 
   const handleView = (row) => { /* lógica para ver producto */ };
-  const handleEdit = (row) => { /* lógica para editar producto */ };
-  const handleDelete = (id) => { /* lógica para eliminar producto */ };
+  const handleEdit = (row) => { navigate(`/editProduct/${row.id}`); };
+  const handleDelete = (id) => {  handleOpenDelete(id) };
 
   const columns = [
     { field: 'name', headerName: 'Nombre', width: 200 },
@@ -57,7 +69,7 @@ function productList() {
           <Button sx={{ m: 1 }} variant="contained" color="success" onClick={() => handleEdit(params.row)}>
             <EditIcon />
           </Button>
-          <Button sx={{ m: 1 }} variant="contained" color="error" onClick={() => handleDelete(params.row.id)}>
+          <Button sx={{ m: 1 }} variant="contained" color="error" onClick={() => handleDelete(params.row._id)}>
             <DeleteIcon />
           </Button>
         </div>
@@ -86,6 +98,25 @@ function productList() {
           sx={{ border: 0 }}
         />
       </Paper>
+      <Modal open={openDelete} onClose={handleCloseDelete}>
+          <Box sx={{
+            position: 'absolute',
+            borderRadius: '10px',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '50%',
+            border: '0',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+          }}>
+            <DeleteProduct
+              onProductDeleted={fetchProducts}
+              id={selectedProduct} 
+              onClose={handleCloseDelete}  />
+          </Box>
+        </Modal>
     </div>
   );
 }

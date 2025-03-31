@@ -11,6 +11,7 @@ import AdvancedSearch from './pages/AdvancedSearch/advancedSearch';
 import CheckOut from './pages/CheckOut/CheckOut';
 import ProductInformationClient from './pages/ProductInformationClient/ProductInformationClient';
 import CreateProduct from './pages/CreateProduct/createProduct';
+import EditProduct from './pages/EditProduct/editProduct';
 import Inventory from './pages/Inventory/Inventory';
 import ProductInformation from './pages/ProductInformation/ProductInformation';
 import ProductList from './pages/ProductList/productList';
@@ -67,7 +68,7 @@ function App() {
           userType === 'vendedor' &&
           <Route element={<SellerRoute />}>
             <Route path="/createProduct" element={<CreateProduct />} />
-            <Route path="/editProduct" element={<CreateProduct />} />
+            <Route path="/editProduct/:productId" element={<EditProduct />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/productInfo" element={<ProductInformation />} />
             <Route path="/productList" element={<ProductList />} />
