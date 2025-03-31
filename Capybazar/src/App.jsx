@@ -59,6 +59,7 @@ function App() {
         {/* client */}{
           userType==='cliente' &&
           <Route element={<ClientRoute />}>
+            <Route path="/" element={<Home />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<WishList />} />
             <Route path="/purchaseHistory" element={<PurchaseHistory />} />
