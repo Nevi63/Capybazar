@@ -5,65 +5,67 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import StarIcon from "@mui/icons-material/Star";
 import image from "../../assets/images/image.png";
 import {useNavigate} from 'react-router-dom'
-function Product() {
+function Product({ product }) {
   const [liked, setLiked] = useState(false);
   const [hover, setHover] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - left) / width - 0.5) * 10; // Rango de -10° a 10°
+    const x = ((e.clientX - left) / width - 0.5) * 10;
     const y = -((e.clientY - top) / height - 0.5) * 10;
     setTilt({ x, y });
   };
+
   const seeProduct = () => {
-    navigate('/productInfo');
-  }
+    navigate('/productInfo', { state: { product } }); // podrías pasar el producto aquí
+  };
+
   const AddToCart = (event) => {
     event.stopPropagation();
-    alert('agregar al carrito')
-  }
-  
+    alert('Agregar al carrito');
+  };
+
   const handleLike = (event) => {
-    event.stopPropagation(); // Evita que el evento suba a elementos padres
+    event.stopPropagation();
     setLiked(!liked);
   };
-  
+
   return (
     <Card
-    onClick={seeProduct}
-    sx={{
-      borderRadius: '20px',
-      width: "280px",
-      maxWidth: "100%",
-      height:'fit-content',
-      m: 2,
-      position: "relative",
-      cursor: "pointer",
-      transform: `perspective(600px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
-      transition: "transform 0.2s ease-out, box-shadow 0.2s ease-out",
-      boxShadow: hover 
-      ? "10px 10px 20px rgba(0, 0, 0, 0.3)"  // Sombra más intensa en hover
-      : "3px 3px 10px rgba(0, 0, 0, 0.2)",  // Sombra más ligera sin hover
-    }}
+      onClick={seeProduct}
+      sx={{
+        borderRadius: '20px',
+        width: "280px",
+        maxWidth: "100%",
+        height: 'fit-content',
+        m: 2,
+        position: "relative",
+        cursor: "pointer",
+        transform: `perspective(600px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
+        transition: "transform 0.2s ease-out, box-shadow 0.2s ease-out",
+        boxShadow: hover
+          ? "10px 10px 20px rgba(0, 0, 0, 0.3)"
+          : "3px 3px 10px rgba(0, 0, 0, 0.2)",
+      }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => {
         setHover(false);
-        setTilt({ x: 0, y: 0 }); // Resetear inclinación
+        setTilt({ x: 0, y: 0 });
       }}
       onMouseMove={handleMouseMove}
     >
       <CardMedia
         component="img"
-        alt="producto"
-        image={image}
+        alt={product.name}
+        image={product.image || image} // usa imagen real o de fallback
         sx={{
-          height: "180px", // Altura fija
-          width: "100%", // Ocupar todo el ancho del card
-          objectFit: "cover", // Evita que se deforme la imagen
+          height: "180px",
+          width: "100%",
+          objectFit: "cover",
         }}
       />
-
 
       {(hover || liked) && (
         <IconButton
@@ -82,19 +84,16 @@ function Product() {
         </IconButton>
       )}
 
-      <CardContent sx={{backgroundColor:'primary.main'}}>
-        <Typography  variant="h6" component="div">
-          Producto
+      <CardContent sx={{ backgroundColor: 'primary.main' }}>
+        <Typography variant="h6" component="div">
+          {product.name}
         </Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary", fontSize:'10px' }}>
-          <StarIcon sx={{ fontSize:'20px' }} />
-          <StarIcon sx={{ fontSize:'20px' }} />
-          <StarIcon sx={{ fontSize:'20px' }} />
-          <StarIcon sx={{ fontSize:'20px' }} />
+        <Typography variant="body2" sx={{ color: "text.secondary", fontSize: '10px' }}>
+          <StarIcon /><StarIcon /><StarIcon /><StarIcon />
         </Typography>
-        <Typography variant="body" sx={{ color: "text.secondary", alignItems: "baseline", display: 'flex', justifyContent:'space-between' }}>
-          MXN 220.00
-          <Button onClick={(event) => AddToCart(event)}  size="small" color="secondary" variant="contained" sx={{ textTransform: "none", ml:1 }}>
+        <Typography variant="body" sx={{ color: "text.secondary", display: 'flex', justifyContent: 'space-between' }}>
+          MXN ${product.price}
+          <Button onClick={AddToCart} size="small" color="secondary" variant="contained" sx={{ textTransform: "none", ml: 1 }}>
             Agregar al carrito
           </Button>
         </Typography>
@@ -102,5 +101,6 @@ function Product() {
     </Card>
   );
 }
+
 
 export default Product;

@@ -50,6 +50,22 @@ router.get('/', authMiddleware, async (req, res) => {
     }
   });
 
+
+  // 📌 Obtener todos los productos para el dashboard (no requiere token)
+router.get('/public', async (req, res) => {
+  try {
+    const products = await Product.find()
+      .populate('categoryId', 'name')
+      .populate('userId', 'firstName lastName')
+      .sort({ createdAt: -1 });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener productos', error: error.message });
+  }
+});
+
+
+
   // 📌 Obtener todos los productos (solo para admins)
 router.get('/admin', authMiddleware, async (req, res) => {
     try {
@@ -64,6 +80,23 @@ router.get('/admin', authMiddleware, async (req, res) => {
       res.status(500).json({ message: 'Error en el servidor', error: error.message });
     }
   });
+
+  // 📌 Obtener busqueda de productos → GET /products/search?query=XXX
+router.get('/search', authMiddleware, async (req, res) => {
+  const { query } = req.query;
+  try {
+    const results = await Product.find({
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { description: { $regex: query, $options: 'i' } }
+      ]
+    }).populate('categoryId').populate('userId');
+
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al buscar productos', error: error.message });
+  }
+});
 
 // 📌 Obtener información de un producto por ID → GET /products/:productId
 router.get('/:productId', authMiddleware, async (req, res) => {
