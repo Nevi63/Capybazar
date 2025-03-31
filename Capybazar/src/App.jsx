@@ -36,11 +36,13 @@ function App() {
        {!hideNavbar && userType && <Navbar userType={userType} />}
       <Routes>
         {/* guest & client*/}
-        <Route  element={<GuestClientRoute />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/advancedSearch" element={<AdvancedSearch />} />
-          <Route path="/productInfo" element={<ProductInformationClient />} />
-        </Route>
+        {userType === 'cliente' || userType ==='guest' &&
+          <Route  element={<GuestClientRoute />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/advancedSearch" element={<AdvancedSearch />} />
+            <Route path="/productInfo/:productId" element={<ProductInformationClient />} />
+          </Route>
+        }
 
         {/* guest */}
         <Route element={<GuestRoute />}>
@@ -67,10 +69,11 @@ function App() {
         {/* seller */}{
           userType === 'vendedor' &&
           <Route element={<SellerRoute />}>
+            <Route path="/" element={<Reports />} />
             <Route path="/createProduct" element={<CreateProduct />} />
             <Route path="/editProduct/:productId" element={<EditProduct />} />
             <Route path="/inventory" element={<Inventory />} />
-            <Route path="/productInfo" element={<ProductInformation />} />
+            <Route path="/productInfo/:productId" element={<ProductInformation />} />
             <Route path="/productList" element={<ProductList />} />
             <Route path="/reports" element={<Reports />} />
           </Route>
@@ -79,7 +82,7 @@ function App() {
         {/* admin */}{
           userType === 'admin' &&
           <Route element={<AdminRoute />}>
-          <Route path="/reports" element={<Reports />} />
+            <Route path="/reports" element={<Reports />} />
             <Route path="/categoryList" element={<CategoryList />} />
             <Route path="/productList" element={<ProductListAdmin />} />
             <Route path="/reviewManagement" element={<ProductInformationAdmin />} />

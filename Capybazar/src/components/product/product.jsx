@@ -19,7 +19,7 @@ function Product({ product }) {
   };
 
   const seeProduct = () => {
-    navigate('/productInfo', { state: { product } }); // podrías pasar el producto aquí
+    navigate(`/productInfo/${product._id}`, { state: { product } }); // podrías pasar el producto aquí
   };
 
   const AddToCart = (event) => {

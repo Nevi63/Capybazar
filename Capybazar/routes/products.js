@@ -54,7 +54,7 @@ router.get('/', authMiddleware, async (req, res) => {
   // 📌 Obtener todos los productos para el dashboard (no requiere token)
 router.get('/public', async (req, res) => {
   try {
-    const products = await Product.find()
+    const products = await Product.find({ deletedAt: null })
       .populate('categoryId', 'name')
       .populate('userId', 'firstName lastName')
       .sort({ createdAt: -1 });
@@ -99,7 +99,7 @@ router.get('/search', authMiddleware, async (req, res) => {
 });
 
 // 📌 Obtener información de un producto por ID → GET /products/:productId
-router.get('/:productId', authMiddleware, async (req, res) => {
+router.get('/:productId', async (req, res) => {
   try {
       const { productId } = req.params;
 
@@ -151,6 +151,39 @@ router.put('/:productId', authMiddleware, async (req, res) => {
       res.status(500).json({ message: 'Error en el servidor', error: error.message });
   }
 });
+
+  // 📌 Editar inventario
+  router.put('/', authMiddleware, async (req, res) => {
+    try {
+        const { productId } = req.params;
+        const userId = req.user.userId;  // ID del usuario autenticado
+        const { name, price, stock, description, image, categoryId } = req.body;
+  
+        // Buscar el producto y verificar si pertenece al usuario autenticado
+        const product = await Product.findById(productId);
+  
+        if (!product) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+  
+        if (product.userId.toString() !== userId) {
+            return res.status(403).json({ message: 'No tienes permiso para editar este producto' });
+        }
+  
+        // Actualizar solo si pertenece al usuario
+        const updatedProduct = await Product.findByIdAndUpdate(
+            productId,
+            { name, price, stock, description, image, categoryId },
+            { new: true }
+        );
+  
+        res.json({ message: 'Producto actualizado', product: updatedProduct });
+  
+    } catch (error) {
+        console.error("❌ Error al actualizar producto:", error);
+        res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    }
+  });
 
 // 📌 Eliminar un producto (baja lógica) → DELETE /products/:productId
 router.delete('/:productId', authMiddleware, async (req, res) => {

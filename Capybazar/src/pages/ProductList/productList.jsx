@@ -44,7 +44,7 @@ function productList() {
     }
   };
 
-  const handleView = (row) => { /* lógica para ver producto */ };
+  const handleView = (row) => { navigate(`/productInfo/${row.id}`); };
   const handleEdit = (row) => { navigate(`/editProduct/${row.id}`); };
   const handleDelete = (id) => {  handleOpenDelete(id) };
 

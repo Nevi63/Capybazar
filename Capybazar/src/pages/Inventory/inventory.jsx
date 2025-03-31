@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
@@ -6,42 +6,92 @@ import TextField from '@mui/material/TextField';
 
 function Inventory() {
     const [isEditing, setIsEditing] = useState(false);
-    const [rows, setRows] = useState([
-        { id: 1, nombre: 'Luna Snow', precio: 100, descripcion: "Lorem ipsum...", cantidad: 4 },
-        { id: 2, nombre: 'Mantis', precio: 200, descripcion: "Lorem ipsum...", cantidad: 3 },
-        { id: 3, nombre: 'Adam Warlock', precio: 120, descripcion: "Lorem ipsum...", cantidad: 6 },
-        { id: 4, nombre: 'Rocket', precio: 235, descripcion: "Lorem ipsum...", cantidad: 5 },
-        { id: 5, nombre: 'Invisible Woman', precio: 58, descripcion: "Lorem ipsum...", cantidad: 4 },
-        { id: 6, nombre: 'Loki', precio: 160, descripcion: "Lorem ipsum...", cantidad: 7 },
-        { id: 7, nombre: 'Cloak & Dagger', precio: 50, descripcion: "Lorem ipsum...", cantidad: 3 },
-    ]);
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/products', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error al obtener productos:', error);
+      }
+    };
+    const saveChanges = async () => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const promises = products.map(async (product) => {
+                const response = await fetch(`http://localhost:5000/products/${product._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        stock: product.stock
+                    })
+                });
+
+                if (!response.ok) {
+                    const result = await response.json();
+                    console.error(`❌ Error en producto ${product._id}:`, result.message);
+                }
+            });
+
+            await Promise.all(promises);
+            
+            alert('✅ Cambios guardados correctamente');
+            setIsEditing(false);
+            fetchProducts();  // Vuelve a cargar los productos
+        } catch (error) {
+            console.error('❌ Error al guardar cambios:', error);
+            alert('Error al guardar cambios');
+        }
+    };
 
     const handleEditClick = () => {
+        if (isEditing) {
+            saveChanges();  // Guarda los cambios solo al hacer clic en "Guardar"
+        }
         setIsEditing(!isEditing);
     };
 
     const handleCantidadChange = (id, value) => {
-        setRows(prevRows => prevRows.map(row => row.id === id ? { ...row, cantidad: Number(value) } : row));
+        setProducts((prevProducts) => 
+            prevProducts.map((product) => 
+                product._id === id ? { ...product, stock: Number(value) } : product
+            )
+        );
     };
 
     const columns = [
-        { field: 'nombre', headerName: 'Nombre', width: 200 },
-        { field: 'precio', headerName: 'Precio', width: 90, type: 'number' },
-        { field: 'descripcion', headerName: 'Descripcion', width: 600 },
+        { field: 'name', headerName: 'Nombre', width: 200 },
+        { field: 'price', headerName: 'Precio', width: 90, type: 'number' },
+        { field: 'description', headerName: 'Descripcion', width: 600 },
         {
-            field: 'cantidad',
+            field: 'stock',
             headerName: 'Cantidad',
             width: 120,
             renderCell: (params) => (
                 isEditing ? (
                     <TextField
                         type="number"
-                        value={params.row.cantidad}
+                        value={params.row.stock}
                         onChange={(e) => handleCantidadChange(params.row.id, e.target.value)}
                         size="small"
                     />
                 ) : (
-                    params.row.cantidad
+                    params.row.stock
                 )
             )
         }
@@ -57,7 +107,7 @@ function Inventory() {
             </span>
             <Paper sx={{ height: 400, width: '100%' }}>
                 <DataGrid
-                    rows={rows}
+                    rows={products.map((p) => ({ id: p._id, ...p }))}
                     columns={columns}
                     pageSizeOptions={[5, 10]}
                     sx={{ border: 0 }}
