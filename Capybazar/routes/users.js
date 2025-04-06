@@ -59,9 +59,10 @@ router.post('/:userId', async (req, res) => {
 
         // Verificar si el usuario existe
         const user = await User.findOne({ email });
-        if (!user) {
+        if (!user || user.deletedAt) {
             return res.status(400).json({ message: 'Usuario no encontrado' });
         }
+        
 
         // Verificar la contraseña
         const isMatch = await bcrypt.compare(password, user.password);
@@ -193,5 +194,26 @@ router.put('/password/:userId', async (req, res) => {
     }
 });
 
+// 📌 Baja lógica del usuario → DELETE /users/:userId
+router.delete('/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+  
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { deletedAt: new Date() },
+        { new: true }
+      );
+  
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+  
+      res.json({ message: 'Usuario dado de baja correctamente', user });
+    } catch (error) {
+      res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    }
+});
+  
 
 export default router;

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, Button } from "@mui/material";
+import Swal from 'sweetalert2';
 
 function deleteProduct({id, onClose, onProductDeleted }) {
   const handleSubmit = async (e) => {
@@ -25,11 +26,19 @@ function deleteProduct({id, onClose, onProductDeleted }) {
         console.log("Respuesta del servidor:", data); // 👀 Depuración
 
         if (response.ok) {
-            alert(`Producto eliminado exitosamente`);
             onProductDeleted();
             onClose();
-        } else {
-            alert(data.message);
+            await Swal.fire({
+              title: "Producto eliminado exitosamente",
+              text: "✅✅✅",
+              icon: "success"
+            });
+        } else {  
+            await Swal.fire({
+              title: "Sucedio un error",
+              text: data.message,
+              icon: "error"
+            });
         }
     } catch (error) {
         console.error('Error al crear la categoría:', error);

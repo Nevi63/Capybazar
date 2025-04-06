@@ -3,6 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Swal from 'sweetalert2'
 
 function Inventory() {
     const [isEditing, setIsEditing] = useState(false);
@@ -50,12 +51,20 @@ function Inventory() {
 
             await Promise.all(promises);
             
-            alert('✅ Cambios guardados correctamente');
+            await Swal.fire({
+              title: "Cambios guardados correctamente",
+              text: "✅✅✅",
+              icon: "success"
+            });
             setIsEditing(false);
             fetchProducts();  // Vuelve a cargar los productos
-        } catch (error) {
+        } catch (error) { 
             console.error('❌ Error al guardar cambios:', error);
-            alert('Error al guardar cambios');
+            await Swal.fire({
+              title: "Sucedio un error",
+              text: 'Error al guardar cambios',
+              icon: "error"
+            });
         }
     };
 
@@ -67,12 +76,24 @@ function Inventory() {
     };
 
     const handleCantidadChange = (id, value) => {
-        setProducts((prevProducts) => 
-            prevProducts.map((product) => 
-                product._id === id ? { ...product, stock: Number(value) } : product
-            )
-        );
+        const numericValue = Number(value);
+    
+        // Verifica si el valor es un número positivo
+        if (numericValue >= 0) {
+            setProducts((prevProducts) =>
+                prevProducts.map((product) =>
+                    product._id === id ? { ...product, stock: numericValue } : product
+                )
+            );
+        } else {
+            Swal.fire({
+                title: "Cantidad no válida",
+                text: "La cantidad debe ser un número positivo.",
+                icon: "warning"
+            });
+        }
     };
+    
 
     const columns = [
         { field: 'name', headerName: 'Nombre', width: 200 },

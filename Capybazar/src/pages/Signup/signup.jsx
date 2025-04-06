@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Link } from "react-router";
-
+import Swal from 'sweetalert2';
 function signup() {
 
   const [formData, setFormData] = useState({
@@ -36,6 +36,41 @@ const handleDateChange = (date) => {
 const handleSubmit = async (e) => {
     e.preventDefault();
 
+    
+    const { firstName, lastName, email, password, birthdate } = formData;
+
+    // Validar campos vacíos
+    if (!firstName || !lastName || !email || !password || !birthdate) {
+      await Swal.fire({
+        title: "Campos incompletos",
+        text: "Por favor completa todos los campos.",
+        icon: "warning"
+      });
+      return;
+    }
+
+    // Validar correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      await Swal.fire({
+        title: "Correo inválido",
+        text: "Ingresa un correo electrónico válido.",
+        icon: "error"
+      });
+      return;
+    }
+
+    // Validar contraseña
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      await Swal.fire({
+        title: "Contraseña inválida",
+        text: "Debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.",
+        icon: "error"
+      });
+      return;
+    }
+
     try {
         const response = await fetch('http://localhost:5000/users/create', {
             method: 'POST',
@@ -45,10 +80,19 @@ const handleSubmit = async (e) => {
 
         const data = await response.json();
         if (response.ok) {
-            alert('Usuario registrado exitosamente');
+            await Swal.fire({
+              title: "Se registro el usuario exitosamente",
+              text: "✅✅✅",
+              icon: "success"
+            });
             setFormData({ firstName: '', lastName: '', email: '', password: '', userType: 'cliente', birthdate: null });
         } else {
-            alert(data.message);
+            
+          await Swal.fire({
+            title: "Sucedio un error",
+            text: data.message,
+            icon: "error"
+          });
         }
     } catch (error) {
         console.error('Error en el registro:', error);

@@ -69,7 +69,7 @@ router.get('/public', async (req, res) => {
   // 📌 Obtener todos los productos (solo para admins)
 router.get('/admin', authMiddleware, async (req, res) => {
     try {
-      const products = await Product.find()
+      const products = await Product.find({ deletedAt: null })
         .populate('categoryId', 'name') // solo queremos el nombre de la categoría
         .populate('userId', 'firstName lastName') // solo nombre del vendedor
         .sort({ createdAt: -1 });
@@ -215,5 +215,35 @@ router.delete('/:productId', authMiddleware, async (req, res) => {
   }
 });
 
+
+// 📌 Eliminar un producto (solo para admins) → DELETE /products/:productId
+router.delete('/admin/:productId', authMiddleware, async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const userId = req.user.userId; // ID del usuario autenticado
+
+    // Verificar si el usuario es un administrador
+    if (req.user.userType !== 'admin') {
+      return res.status(403).json({ message: 'Acceso denegado. Solo los administradores pueden eliminar productos.' });
+    }
+
+    // Buscar el producto
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    // Baja lógica: asignar la fecha actual a `deletedAt`
+    product.deletedAt = new Date();
+    await product.save();
+
+    res.json({ message: 'Producto eliminado (baja lógica)', product });
+
+  } catch (error) {
+    console.error("❌ Error al eliminar producto:", error);
+    res.status(500).json({ message: 'Error en el servidor', error: error.message });
+  }
+});
 
 export default router;

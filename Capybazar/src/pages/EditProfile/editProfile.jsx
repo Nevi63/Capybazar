@@ -4,7 +4,11 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from 'dayjs';
+import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom';
+
 function editProfile() {
+  const navigate = useNavigate();
   const [user, setUser] = useState({});
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -45,6 +49,34 @@ function editProfile() {
   }
 
   const editUserInfo = async () =>{
+
+        if (!firstName.trim() || !lastName.trim()) {
+           await Swal.fire({
+            title: "Campos incompletos",
+            text: "Nombre y apellido son obligatorios.",
+            icon: "warning"
+           });
+          return;
+        }
+        
+        if (!birthdate || !birthdate.isValid()) {
+          await Swal.fire({
+           title: "Campos incompletos",
+           text: "Fecha de nacimiento inválida.",
+           icon: "warning"
+          });
+          return;
+        }
+        
+        if (birthdate.isAfter(dayjs())) {
+          await Swal.fire({
+           title: "Campos incompletos",
+           text: "La fecha de nacimiento no puede ser en el futuro.",
+           icon: "warning"
+          });
+          return;
+        }
+
         try {
             const token = localStorage.getItem('token'); 
             
@@ -69,7 +101,11 @@ function editProfile() {
             console.log("Respuesta del servidor:", data); // 👀 Depuración
 
             if (response.ok) {
-                alert(`Usuario editado exitosamente`);
+                 await Swal.fire({
+                   title: "Usuario modificado exitosamente",
+                   text: "✅✅✅",
+                   icon: "success"
+                 });
             } else {
                 alert(data.message);
             }
@@ -81,11 +117,28 @@ function editProfile() {
 
   const changePassword = async () => {
     if (password !== passwordConfirmation) {
-      alert("Las contraseñas no coinciden");
+      await Swal.fire({
+        title: "Contraseña inválida",
+        text: "Las contraseñas no coinciden",
+        icon: "error"
+       });
       return;
     }
     if (password === '' || passwordConfirmation === '') {
-      alert("No se admiten contraseñas vacias");
+      await Swal.fire({
+        title: "Contraseña inválida",
+        text: "No se admiten contraseñas vacias",
+        icon: "error"
+       });
+      return;
+    }
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      await Swal.fire({
+        title: "Contraseña inválida",
+        text: "Debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.",
+        icon: "error"
+      });
       return;
     }
 
@@ -102,7 +155,11 @@ function editProfile() {
 
       const data = await response.json();
       if (response.ok) {
-        alert("Contraseña actualizada con éxito");
+        await Swal.fire({
+          title: "Contraseña modificada exitosamente",
+          text: "✅✅✅",
+          icon: "success"
+        });
         setPassword('')
         setPasswordConfirmation('')
       } else {
@@ -140,9 +197,18 @@ function editProfile() {
         });
 
         if (response.ok) {
-          alert('Foto de perfil actualizada'); // Actualizar la foto mostrada
+          
+          await Swal.fire({
+            title: "Foto de perfil actualizada exitosamente",
+            text: "✅✅✅",
+            icon: "success"
+          }); // Actualizar la foto mostrada
         } else {
-          alert('Error al subir la foto');
+          await Swal.fire({
+            title: "Sucedio un error",
+            text: 'Sucedio un error al subir la foto',
+            icon: "error"
+          });
         }
       } catch (error) {
         console.error('Error al subir la foto:', error);
@@ -151,6 +217,47 @@ function editProfile() {
 
   }
 
+  const handleDelete = async(e) =>{
+    
+    const confirm = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción eliminará tu cuenta permanentemente",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+  
+    if (!confirm.isConfirmed) return;
+  
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/users/${user._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        await Swal.fire({
+          title: "Cuenta eliminada exitosamente",
+          text: "Esperamos verte pronto 😊",
+          icon: "success"
+        });
+        navigate('/logout')
+      } else {
+        Swal.fire('Error', data.message || 'Error al eliminar la cuenta', 'error');
+      }
+    } catch (error) {
+      console.error('Error al cambiar la contraseña:', error);
+    }
+
+  }
   return (
     <Box sx={{p:7}}>
       <Box sx={{backgroundColor:'primary.main', p:2, py:6, borderRadius:'15px'}}>
@@ -264,7 +371,7 @@ function editProfile() {
             </Box>
         </Box>
         <Box  sx={{display:'flex',flexDirection:{sm:'column', md:'row'}, justifyContent:'flex-end', width:'100%', px:1}}>
-            <Button size='large' sx={{ mr:{ sm:0, md:4}, alignSelf:'flex-end', width:{sm:'100%', md:'auto'}}} variant='contained' color='error'>Eliminar cuenta</Button>
+            <Button onClick={handleDelete} size='large' sx={{ mr:{ sm:0, md:4}, alignSelf:'flex-end', width:{sm:'100%', md:'auto'}}} variant='contained' color='error'>Eliminar cuenta</Button>
         </Box>
       </Box>
     </Box>

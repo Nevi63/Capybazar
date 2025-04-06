@@ -3,7 +3,7 @@ import { Button, Box, Paper } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from '@mui/x-data-grid';
-
+import Swal from 'sweetalert2'
 function productListAdmin() {
   const [products, setProducts] = useState([]);
   const paginationModel = { page: 0, pageSize: 5 };
@@ -29,9 +29,57 @@ function productListAdmin() {
   };
   
 
-  const handleDelete = (id) => {
+  const handleDelete = async(id) => {
     // Por ahora puedes mostrar confirmación
-    alert(`Eliminar producto con ID: ${id}`);
+    
+        const confirm = await Swal.fire({
+          title: '¿Estás seguro?',
+          text: "Esta acción eliminará el producto permanentemente",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        });
+      
+        if (!confirm.isConfirmed) return;
+      
+    try {
+        const token = localStorage.getItem('token'); 
+        console.log("Token enviado:", token); // 👀 Verificar token
+        
+        const url = `http://localhost:5000/products/admin/${id}`
+  
+        const method ='DELETE';
+  
+        const response = await fetch(url, {
+            method: method,
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+  
+        const data = await response.json();
+        console.log("Respuesta del servidor:", data); // 👀 Depuración
+  
+        if (response.ok) {
+            await Swal.fire({
+              title: "Producto eliminado exitosamente",
+              text: "✅✅✅",
+              icon: "success"
+            });
+        } else {  
+            await Swal.fire({
+              title: "Sucedio un error",
+              text: data.message,
+              icon: "error"
+            });
+        }
+    } catch (error) {
+        console.error('Error al crear la categoría:', error);
+    }
   };
 
   const handleMore = (id) => {

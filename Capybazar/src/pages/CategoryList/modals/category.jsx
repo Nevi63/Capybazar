@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button } from "@mui/material";
-
+import Swal from 'sweetalert2'
+import './cat.css'
 function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
     const [nombre, setNombre] = useState('');
 
@@ -19,7 +20,12 @@ function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
         e.preventDefault();
         
         if (!nombre.trim()) {
-            alert("El nombre de la categoría no puede estar vacío.");
+            // Mostrar SweetAlert si el nombre está vacío
+            await Swal.fire({
+                title: "Error",
+                text: "El nombre de la categoría no puede estar vacío.",
+                icon: "error"
+            });
             return;
         }
     
@@ -48,22 +54,34 @@ function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
             console.log("Respuesta del servidor:", data); // 👀 Depuración
     
             if (response.ok) {
-                alert(`Categoría ${action === 'edit' ? 'editada' : 'creada'} exitosamente`);
+                await Swal.fire({
+                    title: `Categoría ${action === 'edit' ? 'editada' : 'creada'} exitosamente`,
+                    icon: "success"
+                });
                 setNombre('');
                 onCategoryCreated();
                 onClose();
             } else {
-                alert(data.message);
+                await Swal.fire({
+                    title: "Error",
+                    text: data.message,
+                    icon: "error"
+                });
             }
         } catch (error) {
             console.error('Error al crear la categoría:', error);
+            await Swal.fire({
+                title: "Error",
+                text: "Hubo un error al procesar la solicitud.",
+                icon: "error"
+            });
         }
   };
   
   
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2, zIndex:0 }}>
             <h1>{action === 'create' ? 'Crear categoría' : 'Editar categoría'}</h1>
             <TextField
                 required

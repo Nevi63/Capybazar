@@ -3,6 +3,7 @@ import { Box, TextField, Button, IconButton } from "@mui/material";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import bgImage from '../../assets/images/capybarabackground3.jpg';
 import { Link, useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 function login() {
 
@@ -30,7 +31,11 @@ function login() {
 
           const data = await response.json();
           if (response.ok) {
-              alert('Inicio de sesión exitoso');
+              await Swal.fire({
+                title: "Inicio de sesión exitoso",
+                text: "✅✅✅",
+                icon: "success"
+              });
               localStorage.setItem('token', data.token); // Guardar el token
               localStorage.setItem('user', JSON.stringify(data.user)); // Guardar el usuario
               localStorage.setItem('userType', data.user.userType); // Guardar el token
