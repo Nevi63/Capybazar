@@ -6,6 +6,8 @@ import {
 import Product from '../../components/product/product';
 import { useLocation } from 'react-router-dom';
 import { debounce } from 'lodash';
+import Swal from 'sweetalert2';
+
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -46,7 +48,7 @@ function AdvancedSearch() {
       category: categoryId,
       sort: sort
     });
-
+  
     fetch(`http://localhost:5000/products/search?${params.toString()}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -60,9 +62,14 @@ function AdvancedSearch() {
       .then(data => setResults(data))
       .catch(err => {
         console.error('❌ Error al buscar productos:', err);
-        alert("No autorizado. Inicia sesión nuevamente.");
+        Swal.fire({
+          title: "Sesión expirada",
+          text: "No autorizado. Inicia sesión nuevamente.",
+          icon: "error"
+        });
       });
   }, 500);
+  
 
   // Triggers para búsqueda
   useEffect(() => {
