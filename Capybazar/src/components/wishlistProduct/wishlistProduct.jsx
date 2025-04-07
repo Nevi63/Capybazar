@@ -34,6 +34,44 @@ function wishlistProduct({product, onDelete }) {
             });
         }
     }
+
+    const handleAddToCart = async () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`http://localhost:5000/cart/${user._id}/add`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            productId: product._id,
+            quantity: 1,
+            mode: 'add'
+          })
+        });
+    
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error al agregar al carrito');
+    
+        Swal.fire({
+          title: '¡Agregado al carrito!',
+          text: `${product.name} se agregó correctamente.`,
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      } catch (err) {
+        console.error("❌ Error al agregar al carrito:", err);
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo agregar al carrito.",
+          icon: "error"
+        });
+      }
+    };
+    
   return (
     <Collapse in={!isDeleted} timeout={300}>
     <Box className="ProductPurchaseHistory" sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
@@ -46,7 +84,7 @@ function wishlistProduct({product, onDelete }) {
         </Box>
       </Box>
       <Box className="botones" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', color: 'white', mx: 1 }}>
-        <Button variant='contained' color='accent'>Agregar al carrito</Button>
+        <Button variant='contained' color='accent'  onClick={handleAddToCart}>Agregar al carrito</Button>
         <Button variant='contained' color='secondary' onClick={handleDelete}>Eliminar de la wish list</Button>
       </Box>
     </Box>
