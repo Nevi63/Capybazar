@@ -6,16 +6,36 @@ import ImageCarousel from '../../components/carousel/carousel';
 
 function Home() {
   const [products, setProducts] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [loading, setLoading] = useState(true); // 🟡 nuevo estado
+  const user = JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    fetch('http://localhost:5000/products/public')
-      .then(res => res.json())
-      .then(data => {
-        console.log("📦 Productos públicos:", data);
-        setProducts(data);
-      })
-      .catch(err => console.error("❌ Error al obtener productos:", err));
+    const fetchData = async () => {
+      try {
+        const productsRes = await fetch('http://localhost:5000/products/public');
+        const productsData = await productsRes.json();
+
+        setProducts(productsData);
+
+        if (user && token) {
+          const wishlistRes = await fetch(`http://localhost:5000/wishlist`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const wishlistData = await wishlistRes.json();
+          setWishlist(wishlistData.wishlist.map(p => p._id));
+          setLoading(false); // ✅ solo cuando todo haya terminado
+        }
+      } catch (err) {
+        console.error("❌ Error al cargar datos:", err);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  if (loading) return <p>Cargando...</p>; // o un spinner bonito
 
   return (
     <div>
@@ -34,8 +54,12 @@ function Home() {
             boxSizing: "border-box",
           }}
         >
-          {products.map((product) => (
-            <Product key={product._id} product={product} />
+          {products.map(product => (
+            <Product
+              key={product._id}
+              product={product}
+              userLiked={wishlist.includes(String(product._id))}
+            />
           ))}
         </Box>
       </Box>
