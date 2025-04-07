@@ -13,6 +13,8 @@ function editProfile() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [birthdate, setBirthdate] = useState(dayjs());
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [address, setAddress] = useState('');
   
   const [profilePicture, setProfilePicture] = useState(null);
   const fileInputRef = useRef(null);
@@ -43,6 +45,8 @@ function editProfile() {
         setLastName(data.lastName)
         setBirthdate(dayjs(data.birthdate))
         setProfilePicture(data.profilePicture || 'https://media1.tenor.com/m/KUUtQs-OOHAAAAAd/rana-que-salta-meme-meme-rana.gif')
+        setPhoneNumber(data.phoneNumber || '');
+        setAddress(data.address || '');
     } catch (error) {
         console.error('Error al obtener el usuario:', error);
     }
@@ -77,6 +81,28 @@ function editProfile() {
           return;
         }
 
+        if (user.userType === 'cliente') {
+          const phoneRegex = /^\d{10}$/;
+        
+          if (!phoneRegex.test(phoneNumber)) {
+            await Swal.fire({
+              title: "Teléfono inválido",
+              text: "El número de teléfono debe tener exactamente 10 dígitos.",
+              icon: "warning"
+            });
+            return;
+          }
+        
+          if (!address.trim()) {
+            await Swal.fire({
+              title: "Dirección inválida",
+              text: "La dirección no puede estar vacía.",
+              icon: "warning"
+            });
+            return;
+          }
+        }
+        
         try {
             const token = localStorage.getItem('token'); 
             
@@ -93,8 +119,12 @@ function editProfile() {
                 body: JSON.stringify({
                   firstName,
                   lastName,
-                  birthdate: birthdate.format('YYYY-MM-DD') // Formatear la fecha correctamente
-                })// 🔹 Asegurar que se envíe como JSON válido
+                  birthdate: birthdate.format('YYYY-MM-DD'),
+                  ...(user.userType === 'cliente' && {
+                    phoneNumber,
+                    address
+                  })
+                })                
             });
 
             const data = await response.json();
@@ -287,6 +317,31 @@ function editProfile() {
                     variant="filled"
                     focused 
                 />
+                {user.userType === 'cliente' && (
+                    <>
+                      <TextField
+                        sx={{ m: 1 }}
+                        id="filled-phone"
+                        label="Teléfono"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        color="secondary"
+                        variant="filled"
+                        focused
+                      />
+                      <TextField
+                        sx={{ m: 1 }}
+                        id="filled-address"
+                        label="Dirección"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        color="secondary"
+                        variant="filled"
+                        focused
+                      />
+                    </>
+                )}
+
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                         label="Select Date"

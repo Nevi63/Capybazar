@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import multer from 'multer';
+import authMiddleware from '../middlewares/auth.js';
 
 const router = express.Router();
 // Configuración de multer para guardar en memoria
@@ -140,35 +141,42 @@ router.put('/photo/:userId', upload.single('profilePicture'), async (req, res) =
 
 
 // 📌 Actualizar datos del usuario → PUT /users/:userId
-router.put('/:userId', async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const { firstName, lastName, birthdate } = req.body;
+router.put('/:userId', authMiddleware, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { firstName, lastName, birthdate, phoneNumber, address } = req.body;
 
-        // Si hay fecha, ajustar zona horaria
-        const birthdateObj = birthdate ? new Date(birthdate) : undefined;
+    const updateFields = { firstName, lastName };
 
-        if (birthdateObj) {
-            // Ajuste para que la fecha se guarde con la zona horaria correcta
-            const localDate = new Date(birthdateObj.getTime() + birthdateObj.getTimezoneOffset() * 60000);
-            
-            
-            if (localDate > new Date()) {
-                return res.status(400).json({ message: 'La fecha de nacimiento no puede ser mayor a hoy.' });
-            }
+    // Validar y ajustar fecha si se proporciona
+    if (birthdate) {
+      const birthdateObj = new Date(birthdate);
+      const localDate = new Date(birthdateObj.getTime() + birthdateObj.getTimezoneOffset() * 60000);
 
-            const updatedUser = await User.findByIdAndUpdate(
-                userId,
-                { firstName, lastName, birthdate: localDate },
-                { new: true }
-            );
+      if (localDate > new Date()) {
+        return res.status(400).json({ message: 'La fecha de nacimiento no puede ser mayor a hoy.' });
+      }
 
-            res.json({ message: 'Datos actualizados correctamente', user: updatedUser });
-        }
-
-    } catch (error) {
-        res.status(500).json({ message: 'Error en el servidor', error: error.message });
+      updateFields.birthdate = localDate;
     }
+
+    if (phoneNumber !== undefined) updateFields.phoneNumber = phoneNumber;
+    if (address !== undefined) updateFields.address = address;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updateFields,
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    res.json({ message: 'Datos actualizados correctamente', user: updatedUser });
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor', error: error.message });
+  }
 });
 
 // 📌 Cambiar contraseña → PUT /users/password/:userId

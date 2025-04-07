@@ -83,6 +83,7 @@ function App() {
         {/* admin */}{
           userType === 'admin' &&
           <Route element={<AdminRoute />}>
+            <Route path="/" element={<Reports />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/categoryList" element={<CategoryList />} />
             <Route path="/productList" element={<ProductListAdmin />} />

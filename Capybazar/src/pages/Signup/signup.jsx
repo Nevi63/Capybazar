@@ -131,10 +131,10 @@ const handleSubmit = async (e) => {
           <h1 style={{margin: '0', fontWeight:'normal', color:'inherit'}}>Registro</h1>
         </span>
         <form onSubmit={handleSubmit}>
-          <TextField required fullWidth name="firstName" label="Nombres" variant="filled" color="secondary" focused onChange={handleChange} value={formData.firstName} />
-          <TextField required fullWidth name="lastName" label="Apellidos" variant="filled" color="secondary" focused onChange={handleChange} value={formData.lastName} />
-          <TextField required fullWidth type="email" name="email" label="Correo" variant="filled" color="secondary" focused onChange={handleChange} value={formData.email} />
-          <TextField required fullWidth type="password" name="password" label="Contraseña" variant="filled" color="secondary" focused onChange={handleChange} value={formData.password} />
+          <TextField  fullWidth name="firstName" label="Nombres" variant="filled" color="secondary" focused onChange={handleChange} value={formData.firstName} />
+          <TextField  fullWidth name="lastName" label="Apellidos" variant="filled" color="secondary" focused onChange={handleChange} value={formData.lastName} />
+          <TextField  fullWidth type="email" name="email" label="Correo" variant="filled" color="secondary" focused onChange={handleChange} value={formData.email} />
+          <TextField  fullWidth type="password" name="password" label="Contraseña" variant="filled" color="secondary" focused onChange={handleChange} value={formData.password} />
         
           
 

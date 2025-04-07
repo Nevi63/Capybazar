@@ -81,22 +81,50 @@ router.get('/admin', authMiddleware, async (req, res) => {
     }
   });
 
-  // 📌 Obtener busqueda de productos → GET /products/search?query=XXX
+// 📌 Obtener búsqueda de productos → GET /products/search?query=&minPrice=&maxPrice=&category=&sort=
 router.get('/search', authMiddleware, async (req, res) => {
-  const { query } = req.query;
+  const { query = '', minPrice = 0, maxPrice = 10000, category, sort } = req.query;
+
   try {
-    const results = await Product.find({
-      $or: [
-        { name: { $regex: query, $options: 'i' } },
-        { description: { $regex: query, $options: 'i' } }
-      ]
-    }).populate('categoryId').populate('userId');
+    const filter = {
+      name: { $regex: query, $options: 'i' },
+      price: { $gte: Number(minPrice) },
+      deletedAt: { $exists: false }
+    };
+
+    // 🛠️ Restaurar lógica +1000
+    if (maxPrice !== '+1000') {
+      filter.price.$lte = Number(maxPrice);
+    }
+
+    if (category) {
+      filter.categoryId = category;
+    }
+
+    let sortOptions = {};
+    switch (sort) {
+      case '': sortOptions = {}; break;
+      case 'az': sortOptions = { name: 1 }; break;
+      case 'za': sortOptions = { name: -1 }; break;
+      case 'dateAsc': sortOptions = { createdAt: 1 }; break;
+      case 'dateDesc': sortOptions = { createdAt: -1 }; break;
+      case 'reviews': sortOptions = { rating: -1 }; break;
+    }
+
+    const results = await Product.find(filter)
+      .populate('categoryId')
+      .populate('userId')
+      .sort(sortOptions)
+      .collation({ locale: 'en', strength: 1 });
 
     res.json(results);
   } catch (error) {
     res.status(500).json({ message: 'Error al buscar productos', error: error.message });
   }
 });
+
+
+
 
 // 📌 Obtener información de un producto por ID → GET /products/:productId
 router.get('/:productId', async (req, res) => {
