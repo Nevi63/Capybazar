@@ -26,20 +26,11 @@ function Product({ product }) {
 
   const AddToCart = async (event) => {
     event.stopPropagation();
-  
-    const user = JSON.parse(localStorage.getItem('user'));
-    const token = localStorage.getItem('token');
-  
-    if (!user || !token) {
-      return Swal.fire({
-        title: "Inicia sesión",
-        text: "Debes iniciar sesión para agregar productos al carrito.",
-        icon: "warning"
-      });
-    }
-  
     try {
-      const response = await fetch(`http://localhost:5000/cart/${user._id}/add`, {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user'));
+  
+      const res = await fetch(`http://localhost:5000/cart/${user._id}/add`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -47,36 +38,33 @@ function Product({ product }) {
         },
         body: JSON.stringify({
           productId: product._id,
-          quantity: 1
+          quantity: 1,          // Agregamos uno por clic
+          mode: 'add'           // 📌 Esto es clave para que el backend lo sume
         })
       });
   
-      const data = await response.json();
-  
-      if (response.ok) {
+      const data = await res.json();
+      if (res.ok) {
         Swal.fire({
-          title: "Producto agregado",
-          text: "Se agregó el producto al carrito 🛒",
-          icon: "success",
+          title: '¡Agregado al carrito!',
+          text: `${product.name} se agregó correctamente.`,
+          icon: 'success',
           timer: 1500,
           showConfirmButton: false
         });
       } else {
-        Swal.fire({
-          title: "Error",
-          text: data.message || "Ocurrió un error al agregar al carrito.",
-          icon: "error"
-        });
+        throw new Error(data.message || 'Algo salió mal');
       }
-    } catch (error) {
-      console.error("❌ Error al agregar al carrito:", error);
+    } catch (err) {
+      console.error('❌ Error al agregar al carrito:', err);
       Swal.fire({
-        title: "Error",
-        text: "No se pudo conectar con el servidor.",
-        icon: "error"
+        title: 'Error',
+        text: 'No se pudo agregar al carrito.',
+        icon: 'error'
       });
     }
   };
+  
   
 
   const handleLike = (event) => {

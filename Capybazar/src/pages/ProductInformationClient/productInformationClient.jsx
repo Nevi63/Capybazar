@@ -6,6 +6,9 @@ import image from "../../assets/images/download.jpg";
 import AddIcon from '@mui/icons-material/Add';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Review from '../../components/review/review';
+import Swal from 'sweetalert2';
+
+
 function productInformationClient() {
   const { productId } = useParams();
   const [name, setName] = useState('');
@@ -17,32 +20,35 @@ function productInformationClient() {
   const [imageBase64, setImageBase64] = useState('');
   const [rating, setRating] = useState(0);
   const navigate = useNavigate();
+  const [product, setProduct] = useState('');
 
   useEffect(() => {
       fetchProduct();
   }, []);
 
-  const fetchProduct = async () =>{
+  const fetchProduct = async () => {
     try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/products/${productId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        setName(data.name);
-        setPrice(data.price);
-        setSeller(data.userId.firstName + ' ' + data.userId.lastName);
-        setDescription(data.description);
-        setCategory(data.categoryId.name);
-        setImageBase64(data.image);
-        setStock(data.stock);
-        setRating(data.rating);
-      } catch (error) {
-        console.error('Error al obtener el producto:', error);
-      }
-  }
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/products/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setProduct(data);
+      setName(data.name);
+      setPrice(data.price);
+      setSeller(data.userId.firstName + ' ' + data.userId.lastName);
+      setDescription(data.description);
+      setCategory(data.categoryId.name);
+      setImageBase64(data.image);
+      setStock(data.stock);
+      setRating(data.rating);
+    } catch (error) {
+      console.error('Error al obtener el producto:', error);
+    }
+  };
+  
   const renderStars = () => {
     const stars = [];
     const maxStars = 5;
@@ -57,6 +63,49 @@ function productInformationClient() {
     }
     return stars;
   };
+
+
+  const AddToCart = async (event) => {
+    event.stopPropagation();
+    try {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user'));
+  
+      const res = await fetch(`http://localhost:5000/cart/${user._id}/add`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productId: product._id,
+          quantity: 1,          // Agregamos uno por clic
+          mode: 'add'           // 📌 Esto es clave para que el backend lo sume
+        })
+      });
+  
+      const data = await res.json();
+      if (res.ok) {
+        Swal.fire({
+          title: '¡Agregado al carrito!',
+          text: `${product.name} se agregó correctamente.`,
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      } else {
+        throw new Error(data.message || 'Algo salió mal');
+      }
+    } catch (err) {
+      console.error('❌ Error al agregar al carrito:', err);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo agregar al carrito.',
+        icon: 'error'
+      });
+    }
+  };
+
   return (
     <div style={{padding: "2rem"}}>
     <Box sx={{display:{sm: 'block', md: 'flex'}, justifyContent:'space-between', m:2}}>
@@ -83,7 +132,7 @@ function productInformationClient() {
           </Typography>
           <p>{description}</p>
           <span>
-            <Button sx={{m:1}} color='accent' variant='contained'>Agregar al carrito</Button>
+            <Button onClick={AddToCart} sx={{m:1}} color='accent' variant='contained'>Agregar al carrito</Button>
             <Button sx={{m:1}} color='primary' variant='contained'> <FavoriteBorderIcon></FavoriteBorderIcon> Agregar a la wishlist</Button>
           </span>
       </Box>
