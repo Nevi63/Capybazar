@@ -1,37 +1,39 @@
-import React, { useState } from 'react';
-import { TextField, IconButton, InputAdornment, Box, Button } from '@mui/material';
+import React from 'react';
+import { TextField, Button, Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
-function NumberInput(prop) {
-  const [value, setValue] = useState(0);
-
+function NumberInput({ value, onChange }) {
   const handleIncrement = () => {
-    setValue((prevValue) => prevValue + 1);
+    onChange(value + 1);
   };
 
   const handleDecrement = () => {
-    setValue((prevValue) => (prevValue > 0 ? prevValue - 1 : 0));
+    onChange(value > 1 ? value - 1 : 1); // 👈 Opcional: mínimo 1
   };
 
   const handleInputChange = (event) => {
     const newValue = parseInt(event.target.value, 10);
-    setValue(isNaN(newValue) ? 0 : newValue);
+    if (!isNaN(newValue) && newValue > 0) {
+      onChange(newValue);
+    } else {
+      onChange(1); // 👈 Opcional: mínimo 1
+    }
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent:'initial' }}>
-        <Button
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'initial' }}>
+      <Button
         color='accent'
         variant='contained'
         onClick={handleDecrement}
         sx={{
-            borderRadius: '50% 0 0 50%',
-            border: '1px solid rgba(0, 0, 0, 0.23)',
-            padding: '0px', // Elimina el padding interno
-            minWidth: '25px', // Ajusta el ancho mínimo
-            height: '30px',
-            marginLeft: '-1px',
+          borderRadius: '50% 0 0 50%',
+          border: '1px solid rgba(0, 0, 0, 0.23)',
+          padding: '0px',
+          minWidth: '25px',
+          height: '30px',
+          marginLeft: '-1px',
         }}
       >
         <RemoveIcon />
@@ -41,30 +43,29 @@ function NumberInput(prop) {
         onChange={handleInputChange}
         InputProps={{
           style: {
-            width: '60px', // Ajusta el ancho del TextField
-            height:'32px',
+            width: '60px',
+            height: '32px',
             backgroundColor: 'white',
             textAlign: 'center'
           }
         }}
-        variant="outlined" // Usar variant outlined para tener un borde consistente
+        variant="outlined"
       />
       <Button
         color='accent'
         variant='contained'
         onClick={handleIncrement}
         sx={{
-            borderRadius: '0 50% 50% 0',
-            border: '1px solid rgba(0, 0, 0, 0.23)',
-            padding: '0px', // Elimina el padding interno
-            minWidth: '25px', // Ajusta el ancho mínimo
-            height: '30px',
-            marginRight: '-1px',
+          borderRadius: '0 50% 50% 0',
+          border: '1px solid rgba(0, 0, 0, 0.23)',
+          padding: '0px',
+          minWidth: '25px',
+          height: '30px',
+          marginRight: '-1px',
         }}
       >
-        <AddIcon sx={{m:0, p:0}} />
+        <AddIcon sx={{ m: 0, p: 0 }} />
       </Button>
-      
     </Box>
   );
 }
