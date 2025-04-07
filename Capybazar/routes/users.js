@@ -86,7 +86,7 @@ router.post('/:userId', async (req, res) => {
 });
 
 // 📌 Obtener usuario por ID → GET /users/:userId
-router.get('/:userId', async (req, res) => {
+router.get('/:userId', authMiddleware, async (req, res) => {
     try {
         const { userId } = req.params;
         const user = await User.findById(userId).select('-password');  // Excluir contraseña
@@ -103,7 +103,7 @@ router.get('/:userId', async (req, res) => {
 
 
 // 📌 Cambiar foto de perfil → PUT /users/:userId/photo
-router.put('/photo/:userId', upload.single('profilePicture'), async (req, res) => {
+router.put('/photo/:userId',authMiddleware, upload.single('profilePicture'), async (req, res) => {
     try {
         const { userId } = req.params;
 
@@ -180,7 +180,7 @@ router.put('/:userId', authMiddleware, async (req, res) => {
 });
 
 // 📌 Cambiar contraseña → PUT /users/password/:userId
-router.put('/password/:userId', async (req, res) => {
+router.put('/password/:userId',authMiddleware, async (req, res) => {
     try {
         const { userId } = req.params;
         const { newPassword } = req.body;
@@ -203,7 +203,7 @@ router.put('/password/:userId', async (req, res) => {
 });
 
 // 📌 Baja lógica del usuario → DELETE /users/:userId
-router.delete('/:userId', async (req, res) => {
+router.delete('/:userId', authMiddleware,async (req, res) => {
     try {
       const { userId } = req.params;
   
