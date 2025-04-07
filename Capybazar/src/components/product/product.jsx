@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { Card, CardMedia, CardContent, Typography, Button, IconButton } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -7,11 +7,36 @@ import image from "../../assets/images/image.png";
 import {useNavigate} from 'react-router-dom'
 import Swal from 'sweetalert2';
 
-function Product({ product, userLiked }) {
-  const [liked, setLiked] = useState(userLiked || false);
+function Product({ product }) {
+  const [liked, setLiked] = useState(false);
   const [hover, setHover] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+
+    const fetchWishlist = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/wishlist', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok) {
+          // Verifica si el producto está en la wishlist
+          const isProductInWishlist = data.wishlist.some(item => item._id === product._id);
+          setLiked(isProductInWishlist);
+        }
+      } catch (err) {
+        console.error("❌ Error al obtener wishlist:", err);
+      }
+    };
+
+    if (user && token) {
+      fetchWishlist();
+    }
+  }, [product._id]); // Vuelve a ejecutar cuando el producto cambia
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
