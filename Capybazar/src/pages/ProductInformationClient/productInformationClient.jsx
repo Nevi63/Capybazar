@@ -5,6 +5,7 @@ import StarIcon from "@mui/icons-material/Star";
 import image from "../../assets/images/download.jpg";
 import AddIcon from '@mui/icons-material/Add';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import Review from '../../components/review/review';
 import Swal from 'sweetalert2';
 
@@ -21,10 +22,72 @@ function productInformationClient() {
   const [rating, setRating] = useState(0);
   const navigate = useNavigate();
   const [product, setProduct] = useState('');
-
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
+  const [liked, setLiked] = useState(false)
   useEffect(() => {
       fetchProduct();
+      fetchWishlist();
   }, []);
+
+  const fetchWishlist = async () => {
+    if(token){
+      try {
+        const res = await fetch('http://localhost:5000/wishlist', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok) {
+          console.log(productId)
+          // Verifica si el producto está en la wishlist
+          const isProductInWishlist = data.wishlist.some(item => item._id === productId);
+          setLiked(isProductInWishlist);
+        }
+      } catch (err) {
+        console.error("❌ Error al obtener wishlist:", err);
+      }
+    }
+  };
+    const handleLike = async(event) => {
+      event.stopPropagation();
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = localStorage.getItem('token');
+  
+      if (!user || !token) {
+        return Swal.fire({
+          title: "Inicia sesión",
+          text: "Debes iniciar sesión para usar la wishlist.",
+          icon: "warning"
+        });
+      }
+  
+      const newLiked = !liked;
+      setLiked(newLiked);
+      
+      try {
+        const url = `http://localhost:5000/wishlist/${product._id}`;
+        const method = newLiked ? 'POST' : 'DELETE';
+    
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        });
+    
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error en wishlist');
+      } catch (err) {
+        console.error("❌ Error wishlist:", err);
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo actualizar la wishlist.",
+          icon: "error"
+        });
+        setLiked(!newLiked); // revertir si falla
+      }
+    };
 
   const fetchProduct = async () => {
     try {
@@ -68,8 +131,6 @@ function productInformationClient() {
   const AddToCart = async (event) => {
     event.stopPropagation();
     try {
-      const token = localStorage.getItem('token');
-      const user = JSON.parse(localStorage.getItem('user'));
   
       const res = await fetch(`http://localhost:5000/cart/${user._id}/add`, {
         method: 'PUT',
@@ -133,7 +194,8 @@ function productInformationClient() {
           <p>{description}</p>
           <span>
             <Button onClick={AddToCart} sx={{m:1}} color='accent' variant='contained'>Agregar al carrito</Button>
-            <Button sx={{m:1}} color='primary' variant='contained'> <FavoriteBorderIcon></FavoriteBorderIcon> Agregar a la wishlist</Button>
+            {token && <Button onClick={handleLike} sx={{m:1}} color='primary' variant='contained'> {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />} 
+            {liked ? 'Quitar de la wishlist' : 'Agregar a la wishlist'}</Button>}
           </span>
       </Box>
          
