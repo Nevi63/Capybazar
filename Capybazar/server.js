@@ -31,7 +31,8 @@ import categoryRoutes from './routes/categories.js';
 app.use('/categories', categoryRoutes);
 import productRoutes from './routes/products.js';
 app.use('/products', productRoutes);
-
+import cartRoutes from './routes/carts.js';
+app.use('/cart', cartRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));

@@ -31,8 +31,8 @@ function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
     
         try {
             const token = localStorage.getItem('token'); 
-            console.log("Token enviado:", token); // 👀 Verificar token
-            console.log("Enviando datos al backend:", JSON.stringify({ nombre })); // 👀 Verificar datos antes de enviarlos
+            console.log("Token enviado:", token); 
+            console.log("Enviando datos al backend:", JSON.stringify({ nombre })); 
             
             
             const url = action === 'edit' 
@@ -47,11 +47,11 @@ function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ nombre }) // 🔹 Asegurar que se envíe como JSON válido
+                body: JSON.stringify({ nombre }) 
             });
     
             const data = await response.json();
-            console.log("Respuesta del servidor:", data); // 👀 Depuración
+            console.log("Respuesta del servidor:", data); 
     
             if (response.ok) {
                 await Swal.fire({
