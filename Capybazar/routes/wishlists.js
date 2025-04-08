@@ -51,6 +51,7 @@ router.get('/', authMiddleware, async (req, res) => {
   
       const user = await User.findById(userId).populate({
         path: 'wishlist',
+        match: { deletedAt: { $exists: false } },
         populate:[ { path: 'categoryId', select: 'name' }, // opcional
         { path: 'userId', select: 'firstName lastName' }]
       });
