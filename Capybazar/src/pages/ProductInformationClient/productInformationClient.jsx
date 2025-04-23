@@ -9,6 +9,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import Review from '../../components/review/review';
 import Swal from 'sweetalert2';
 
+import CircularProgress from '@mui/material/CircularProgress';
 
 function productInformationClient() {
   const { productId } = useParams();
@@ -25,22 +26,27 @@ function productInformationClient() {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
   const [liked, setLiked] = useState(false)
+  const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
-      fetchProduct();
-      fetchWishlist();
+    const fetchData = async () => {
+      await Promise.all([fetchProduct(), fetchWishlist()]);
+      setLoading(false);
+    };
+    fetchData();
   }, []);
-
+  
   const fetchWishlist = async () => {
     if(token){
       try {
-        const res = await fetch('http://localhost:5000/wishlist', {
+        const res = await fetch('http://localhost:5000/wishlist/ids', {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
         if (res.ok) {
           console.log(productId)
           // Verifica si el producto está en la wishlist
-          const isProductInWishlist = data.wishlist.some(item => item._id === productId);
+          const isProductInWishlist = data.wishlist.some(id => id === productId);
           setLiked(isProductInWishlist);
         }
       } catch (err) {
@@ -167,6 +173,20 @@ function productInformationClient() {
     }
   };
 
+  
+  if (loading) {
+    return (
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '80vh',
+        width: '100%',
+      }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <div style={{padding: "2rem"}}>
     <Box sx={{display:{sm: 'block', md: 'flex'}, justifyContent:'space-between', m:2}}>

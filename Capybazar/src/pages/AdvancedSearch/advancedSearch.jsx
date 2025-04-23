@@ -7,7 +7,7 @@ import Product from '../../components/product/product';
 import { useLocation } from 'react-router-dom';
 import { debounce } from 'lodash';
 import Swal from 'sweetalert2';
-
+import CircularProgress from '@mui/material/CircularProgress';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -24,6 +24,7 @@ function AdvancedSearch() {
   const [sort, setSort] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Obtener categorías
   useEffect(() => {
@@ -57,6 +58,7 @@ function AdvancedSearch() {
     })
       .then(res => {
         if (!res.ok) throw new Error("Token inválido");
+        setLoading(false)
         return res.json();
       })
       .then(data => setResults(data))
@@ -157,6 +159,20 @@ function AdvancedSearch() {
       </Box>
 
       {/* Resultados */}
+          {loading === true && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexBasis: '70%',
+                    height: '200px'
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              )}
+              {results && loading ==false && (
       <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <Box sx={{
           display: "flex",
@@ -175,6 +191,8 @@ function AdvancedSearch() {
           )}
         </Box>
       </Box>
+
+              )}
     </Box>
   );
 }

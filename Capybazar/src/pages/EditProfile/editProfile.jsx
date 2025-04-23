@@ -6,8 +6,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function editProfile() {
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [user, setUser] = useState({});
   const [firstName, setFirstName] = useState('');
@@ -37,7 +39,6 @@ function editProfile() {
                 'Content-Type': 'application/json'
             }
         });
-
         const data = await response.json();
         console.log(data)
         setUser(data);
@@ -47,6 +48,7 @@ function editProfile() {
         setProfilePicture(data.profilePicture || 'https://media1.tenor.com/m/KUUtQs-OOHAAAAAd/rana-que-salta-meme-meme-rana.gif')
         setPhoneNumber(data.phoneNumber || '');
         setAddress(data.address || '');
+        setLoading(false);
     } catch (error) {
         console.error('Error al obtener el usuario:', error);
     }
@@ -288,6 +290,20 @@ function editProfile() {
     }
 
   }
+  
+    if (loading) {
+      return (
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '80vh',
+          width: '100%',
+        }}>
+          <CircularProgress />
+        </Box>
+      );
+    }
   return (
     <Box sx={{p:7}}>
       <Box sx={{backgroundColor:'primary.main', p:2, py:6, borderRadius:'15px'}}>

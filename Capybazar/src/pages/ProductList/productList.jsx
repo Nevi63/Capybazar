@@ -9,7 +9,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import Modal from '@mui/material/Modal';
 import DeleteProduct from './deleteProduct/deleteProduct';
+import CircularProgress from '@mui/material/CircularProgress';
 function productList() {
+  const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const paginationModel = { page: 0, pageSize: 5 };
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ function productList() {
       });
       const data = await response.json();
       setProducts(data);
+      setLoading(false)
     } catch (error) {
       console.error('Error al obtener productos:', error);
     }
@@ -76,7 +79,19 @@ function productList() {
       ),
     },
   ];
-
+  if (loading) {
+    return (
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '80vh',
+        width: '100%',
+      }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <div style={{ padding: '2rem' }}>
       <span style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>

@@ -19,13 +19,13 @@ function Product({ product }) {
 
     const fetchWishlist = async () => {
       try {
-        const res = await fetch('http://localhost:5000/wishlist', {
+        const res = await fetch('http://localhost:5000/wishlist/ids', {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
         if (res.ok) {
           // Verifica si el producto está en la wishlist
-          const isProductInWishlist = data.wishlist.some(item => item._id === product._id);
+          const isProductInWishlist = data.wishlist.some(id => id === product._id);
           setLiked(isProductInWishlist);
         }
       } catch (err) {
@@ -193,7 +193,7 @@ function Product({ product }) {
           <StarIcon /><StarIcon /><StarIcon /><StarIcon />
         </Typography>
         <Typography variant="body" sx={{ color: "text.secondary", display: 'flex', justifyContent: 'space-between' }}>
-          MXN ${product.price}
+          MXN ${(product.price).toFixed(2)}
           <Button onClick={AddToCart} size="small" color="secondary" variant="contained" sx={{ textTransform: "none", ml: 1 }}>
             Agregar al carrito
           </Button>

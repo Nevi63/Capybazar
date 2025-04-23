@@ -61,6 +61,25 @@ router.get('/', authMiddleware, async (req, res) => {
       console.error("❌ Error al obtener wishlist:", error);
       res.status(500).json({ message: 'Error en el servidor' });
     }
-  });
+});
+
+// 📌 Obtener solo IDs de productos en wishlist → GET /wishlist
+router.get('/ids/', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const user = await User.findById(userId).populate({
+      path: 'wishlist',
+      match: { deletedAt: { $exists: false } },
+      select: '_id' // solo trae el ID
+    });
+
+    const wishlistIds = user.wishlist.map(product => product._id);
+    res.json({ wishlist: wishlistIds });
+  } catch (error) {
+    console.error("❌ Error al obtener wishlist:", error);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
 
   export default router;

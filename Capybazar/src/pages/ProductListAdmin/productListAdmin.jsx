@@ -4,7 +4,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from '@mui/x-data-grid';
 import Swal from 'sweetalert2'
+import CircularProgress from '@mui/material/CircularProgress';
+
 function productListAdmin() {
+  const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const paginationModel = { page: 0, pageSize: 5 };
 
@@ -23,6 +26,7 @@ function productListAdmin() {
       const data = await res.json();
       console.log("📦 Productos recibidos:", data); // 👈 VERIFICAMOS
       setProducts(data);
+      setLoading(false)
     } catch (error) {
       console.error("❌ Error al obtener productos:", error);
     }
@@ -130,6 +134,19 @@ function productListAdmin() {
     },
   ];
 
+  if (loading) {
+    return (
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '80vh',
+        width: '100%',
+      }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <Box sx={{ p: 5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>

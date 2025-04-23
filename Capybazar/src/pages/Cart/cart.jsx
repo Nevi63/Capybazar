@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Typography, Button, Box } from "@mui/material";
 import Swal from 'sweetalert2';
 import NumberInput from '../../components/numberInput/numberInput';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function Cart() {
   const [cart, setCart] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [user] = useState(JSON.parse(localStorage.getItem('user')) || {});
 
   useEffect(() => {
@@ -20,6 +22,7 @@ function Cart() {
         }
       });
       const data = await res.json();
+      setLoading(false)
       setCart(data);
     } catch (err) {
       console.error('❌ Error al cargar el carrito', err);
@@ -105,12 +108,25 @@ function Cart() {
 
   return (
     <Box sx={{ p: 8, display: 'flex', flexDirection: { sm: 'column', md: 'row' } }}>
-      <Box sx={{ backgroundColor: 'primary.main', flexBasis: '70%', m: 2, p: 1 }}>
+    {loading === true && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexBasis: '70%',
+              height: '200px'
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
+      { loading ==false &&(
+        <Box sx={{ backgroundColor: 'primary.main', flexBasis: '70%', m: 2, p: 1 }}>
         <h1 style={{ fontWeight: 'normal', marginLeft: '2rem' }}>Carrito</h1>
         <hr style={{ border: '1px solid black' }} />
-
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          {cart?.products?.length > 0 ? (
+          {loading===false && cart?.products?.length > 0 ? (
             cart.products.map(item => (
               <Box key={item.productId._id} sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
                 <Box sx={{ display: 'flex' }}>
@@ -157,6 +173,11 @@ function Cart() {
           Vaciar carrito
         </Button>
       </Box>
+      )
+
+
+
+      }
 
       <Box sx={{ backgroundColor: 'primary.main', flexBasis: '20%', m: 2, p: 4, height: 'fit-content', display: 'flex', flexDirection: 'column' }}>
         <Box>

@@ -3,8 +3,10 @@ import {useParams, useNavigate} from 'react-router-dom'
 import { Typography, Box } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import Review from '../../components/review/review';
+import CircularProgress from '@mui/material/CircularProgress';
 function productInformation() {
   
+    const [loading, setLoading] = useState(true);
     const { productId } = useParams();
     const [name, setName] = useState('');
     const [price, setPrice] = useState(0);
@@ -35,6 +37,7 @@ function productInformation() {
         setImageBase64(data.image);
         setStock(data.stock);
         setRating(data.rating);
+        setLoading(false)
       } catch (error) {
         console.error('Error al obtener el producto:', error);
       }
@@ -53,6 +56,20 @@ function productInformation() {
     }
     return stars;
   };
+
+  if (loading) {
+    return (
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '80vh',
+        width: '100%',
+      }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <div style={{padding: "2rem"}}>
       <h1>Información del producto</h1>

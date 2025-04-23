@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
+import {Box, Button} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Swal from 'sweetalert2'
-
+import CircularProgress from '@mui/material/CircularProgress';
 function Inventory() {
+    const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [products, setProducts] = useState([]);
 
@@ -23,6 +24,7 @@ function Inventory() {
         });
         const data = await response.json();
         setProducts(data);
+        setLoading(false)
       } catch (error) {
         console.error('Error al obtener productos:', error);
       }
@@ -117,7 +119,19 @@ function Inventory() {
             )
         }
     ];
-
+    if (loading) {
+        return (
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '80vh',
+            width: '100%',
+          }}>
+            <CircularProgress />
+          </Box>
+        );
+      }
     return (
         <div style={{ padding: '2rem' }}>
             <span style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>

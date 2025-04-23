@@ -8,8 +8,10 @@ import AddIcon from '@mui/icons-material/Add';
 import Category from './modals/category';
 import Modal from '@mui/material/Modal';
 import DeleteCategory from './modals/deleteCategory'
+import CircularProgress from '@mui/material/CircularProgress';
 
 function categoryList() {
+  const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
@@ -36,6 +38,7 @@ function categoryList() {
         const data = await response.json();
         //console.log(data)
         setCategories(data);
+        setLoading(false)
     } catch (error) {
         console.error('Error al obtener categorías:', error);
     }
@@ -83,7 +86,19 @@ function categoryList() {
       ),
     },
   ];
-
+ if (loading) {
+      return (
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '80vh',
+          width: '100%',
+        }}>
+          <CircularProgress />
+        </Box>
+      );
+    }
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>

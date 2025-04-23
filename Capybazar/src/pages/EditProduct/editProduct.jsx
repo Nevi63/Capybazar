@@ -7,8 +7,10 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import UploadIcon from '@mui/icons-material/Upload';
 import Swal from 'sweetalert2'
+import CircularProgress from '@mui/material/CircularProgress';
 
 function editProduct() {
+  const [loading, setLoading] = useState(true);
   const { productId } = useParams();
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
@@ -40,6 +42,7 @@ function editProduct() {
         setCategoryId(data.categoryId._id);
         setImageBase64(data.image);
         setStock(data.stock);
+        setLoading(false)
       } catch (error) {
         console.error('Error al obtener el producto:', error);
       }
@@ -124,7 +127,19 @@ function editProduct() {
       console.error("Error al crear el producto:", err);
     }
   };
-
+  if (loading) {
+    return (
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '80vh',
+        width: '100%',
+      }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <Box sx={{ p: 4 }}>
       <h1>Editar Producto</h1>

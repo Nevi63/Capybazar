@@ -5,11 +5,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import WishlistProduct from '../../components/wishlistProduct/wishlistProduct';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function wishList() {
     const [wishlist, setWishlist] = useState([]);
     const [filteredWishlist, setFilteredWishlist] = useState([]);
     const [filter, setFilter] = useState('');
+    const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('token');
     
     const removeFromWishlist = (productId) => {
@@ -23,6 +25,7 @@ function wishList() {
               headers: { Authorization: `Bearer ${token}` }
             });
             const data = await res.json();
+            setLoading(false);
             setWishlist(data.wishlist);
             setFilteredWishlist(data.wishlist);  // Initialize filtered wishlist
           } catch (err) {
@@ -77,13 +80,22 @@ function wishList() {
             </Select>
         </FormControl>
     </Box>
+    {loading === true && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+            <CircularProgress />
+        </Box>
+    )}
     <Box sx={{backgroundColor:'primary.main', display:'flex', flexDirection:'column', px:3}}>
-    {filteredWishlist.map((product, index) => (
-       <React.Fragment key={product._id}>
-           <WishlistProduct product={product} onDelete={removeFromWishlist} />
-           {index < filteredWishlist.length - 1 && <hr style={{ width: '100%', borderColor: 'black' }} />}
-       </React.Fragment>
-    ))}
+    {loading === false && filteredWishlist.length === 0 ? (
+    <p style={{ padding: '1rem', textAlign: 'center' }}>Tu wishlist está vacía.</p>
+  ) : (
+    filteredWishlist.map((product, index) => (
+      <React.Fragment key={product._id}>
+        <WishlistProduct product={product} onDelete={removeFromWishlist} />
+        {index < filteredWishlist.length - 1 && <hr style={{ width: '100%', borderColor: 'black' }} />}
+      </React.Fragment>
+    ))
+  )}
                 
     </Box>
     </Box>
