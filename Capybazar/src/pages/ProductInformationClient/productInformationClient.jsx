@@ -8,10 +8,12 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import Review from '../../components/review/review';
 import Swal from 'sweetalert2';
-
+import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import MakeReview from './modals/makeReview';
 function productInformationClient() {
+  const [canReview, setCanReview] = useState(false);
+  const [reviews, setReviews] = useState([]);
   const { productId } = useParams();
   const [name, setName] = useState('');
   const [seller, setSeller] = useState('');
@@ -27,15 +29,51 @@ function productInformationClient() {
   const user = JSON.parse(localStorage.getItem('user'));
   const [liked, setLiked] = useState(false)
   const [loading, setLoading] = useState(true);
+
+  //para modal
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   
   useEffect(() => {
     const fetchData = async () => {
-      await Promise.all([fetchProduct(), fetchWishlist()]);
+      await Promise.all([fetchProduct(), fetchWishlist(), fetchReviews()]);
       setLoading(false);
     };
     fetchData();
   }, []);
   
+  const fetchReviews = async() =>{
+    if(token){
+      try {
+        const res = await fetch(`http://localhost:5000/reviews/can-review/${productId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok) {
+          // Verifica si el producto está en la wishlist
+          console.log(data);
+          setCanReview(data.canReview);
+        }
+      } catch (err) {
+        console.error("❌ Error al obtener reviews:", err);
+      }
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/reviews/${productId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        // Verifica si el producto está en la wishlist
+        console.log(data);
+        setReviews(data);
+      }
+    } catch (err) {
+      console.error("❌ Error al obtener reviews:", err);
+    }
+  }
   const fetchWishlist = async () => {
     if(token){
       try {
@@ -230,14 +268,37 @@ function productInformationClient() {
       padding: '2rem'}}>
       <div style={{display:'flex', justifyContent:'space-between'}}>
           <h1 style={{fontWeight: 'normal', margin: 0}}>Reviews</h1>
-          <Button sx={{m:1}} color='accent' disabled variant='contained'><AddIcon></AddIcon> Hacer una review</Button>
-      </div>
+          <Button onClick={handleOpen} sx={{m:1}} color='accent'disabled={!canReview}variant='contained'><AddIcon></AddIcon> Hacer una review</Button>
+      </div> 
       <div>
-        <Review></Review>
-        <Review></Review>
-        <Review></Review>
+        {reviews.length === 0 ? (
+          <p style={{ color: 'gray', textAlign: 'center' }}>Todavía no hay reviews para este producto.</p>
+        ) : (
+          reviews.map((rev, idx) => (
+            <Review key={idx} {...rev} />
+          ))
+        )}
       </div>
     </Box>
+    <Modal open={open} onClose={handleClose}>
+      <Box sx={{
+        position: 'absolute',
+        borderRadius: '10px',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '50%',
+        border: '0',
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+      }}>
+        <MakeReview 
+          productId={productId}
+          onClose={handleClose}
+        />
+      </Box>
+    </Modal>
   </div>
   )
 }

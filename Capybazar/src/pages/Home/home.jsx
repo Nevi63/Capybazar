@@ -45,7 +45,7 @@ function Home() {
           display: "flex",
           flexWrap: "wrap",
           justifyContent: { xs: 'center', sm: 'center', md: "flex-start" },
-          alignItems: "center",
+          alignItems: "stretch",
           gap: 2,
           width: "90%",
           mx: 'auto',

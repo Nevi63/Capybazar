@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Card, CardMedia, CardContent, Typography, Button, IconButton } from "@mui/material";
+import { Card, CardMedia, CardContent, Typography, Button, IconButton, Box } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import StarIcon from "@mui/icons-material/Star";
@@ -140,7 +140,8 @@ function Product({ product }) {
         borderRadius: '20px',
         width: "280px",
         maxWidth: "100%",
-        height: 'fit-content',
+        display:'flex',
+        flexDirection:'column',
         m: 2,
         position: "relative",
         cursor: "pointer",
@@ -162,7 +163,7 @@ function Product({ product }) {
         alt={product.name}
         image={product.image || image} // usa imagen real o de fallback
         sx={{
-          height: "180px",
+          height: 180,
           width: "100%",
           objectFit: "cover",
         }}
@@ -185,19 +186,41 @@ function Product({ product }) {
         </IconButton>
       )}
 
-      <CardContent sx={{ backgroundColor: 'primary.main' }}>
+      <CardContent   sx={{
+      backgroundColor: 'primary.main',
+      flexGrow: 1,             // <-- ocupa solo el espacio restante
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between' // <-- reparte bien el contenido interno
+    }}>
         <Typography variant="h6" component="div">
           {product.name}
         </Typography>
         <Typography variant="body2" sx={{ color: "text.secondary", fontSize: '10px' }}>
-          <StarIcon /><StarIcon /><StarIcon /><StarIcon />
+        {product.rating.length== 0 || !product.rating ?(
+          'sin rating'
+
+        ):(
+          [...Array(product.rating)].map((_, i) => (
+            <StarIcon key={i} />
+          ))
+        )}
         </Typography>
-        <Typography variant="body" sx={{ color: "text.secondary", display: 'flex', justifyContent: 'space-between' }}>
-          MXN ${(product.price).toFixed(2)}
-          <Button onClick={AddToCart} size="small" color="secondary" variant="contained" sx={{ textTransform: "none", ml: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            MXN ${(product.price).toFixed(2)}
+          </Typography>
+          <Button
+            onClick={AddToCart}
+            size="small"
+            color="secondary"
+            variant="contained"
+            sx={{ textTransform: "none", ml: 1, whiteSpace: 'nowrap' }}
+          >
             Agregar al carrito
           </Button>
-        </Typography>
+        </Box>
+
       </CardContent>
     </Card>
   );

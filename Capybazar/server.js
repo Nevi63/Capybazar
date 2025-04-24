@@ -37,6 +37,8 @@ import wishlistRoutes from './routes/wishlists.js';
 app.use('/wishlist', wishlistRoutes);
 import ordersRoutes from './routes/orders.js';
 app.use('/orders', ordersRoutes);
+import reviewsRoutes from './routes/reviews.js';
+app.use('/reviews', reviewsRoutes);
 
 
 const PORT = process.env.PORT || 5000;
