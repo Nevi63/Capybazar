@@ -82,14 +82,14 @@ router.post('/', authMiddleware, async (req, res) => {
       res.status(500).json({ message: 'Error al crear la review', error: error.message });
     }
   });
-
-  router.delete('/:productId', authMiddleware, async (req, res) => {
-    const { productId } = req.params;
+  router.delete('/:reviewId', authMiddleware, async (req, res) => {
+    const { reviewId } = req.params;
     const userId = req.user.userId;
+    console.log('HUH')
   
     try {
       const review = await Review.findOneAndUpdate(
-        { userId, productId, deletedAt: null },
+        { _id: reviewId },
         { deletedAt: new Date() },
         { new: true }
       );

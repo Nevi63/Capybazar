@@ -3,11 +3,45 @@ import { Typography, Button, Box } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import image from "../../assets/images/download.jpg";
 import DeleteIcon from '@mui/icons-material/Delete';
+import Swal from 'sweetalert2';
 
 function review(props) {
   useEffect(()=>{
     console.log('props', props)
   })
+  const handleDelete = async () => {
+    const result = await Swal.fire({
+      title: '¿Eliminar reseña?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      console.log(props._id)
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:5000/reviews/${props._id}`, {
+        method: 'delete',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) throw new Error("Error al eliminar la reseña");
+
+      Swal.fire('¡Eliminada!', 'La reseña ha sido eliminada.', 'success');
+
+      if (props.onDelete) props.onDelete(props._id);
+    } catch (err) {
+      Swal.fire('Error', 'No se pudo eliminar la reseña.', 'error');
+      console.error("❌ Error al eliminar review:", err);
+    }
+  };
+
   return (
     <Box sx={{backgroundColor: 'accent.main', p:2, borderRadius: '10px', my:2}}>
         <Box sx={{display: 'flex', justifyContent:'space-between'}}>
@@ -43,7 +77,7 @@ function review(props) {
               minute: '2-digit',
               hour12: false
             })}
-             { props.delete && <Button sx={{ ml:2, p: 1, minWidth: 0 }} color='error' variant='contained'> <DeleteIcon></DeleteIcon></Button>}
+             { props.delete && <Button onClick={handleDelete} sx={{ ml:2, p: 1, minWidth: 0 }} color='error' variant='contained'> <DeleteIcon></DeleteIcon></Button>}
             </span>
         </Box>        
         <p style={{color:'white'}}>{props.review}</p>

@@ -5,11 +5,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from '@mui/x-data-grid';
 import Swal from 'sweetalert2'
 import CircularProgress from '@mui/material/CircularProgress';
+import {useNavigate} from 'react-router-dom'
 
 function productListAdmin() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const paginationModel = { page: 0, pageSize: 5 };
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
@@ -87,7 +89,8 @@ function productListAdmin() {
   };
 
   const handleMore = (id) => {
-    alert(`Ver más del producto con ID: ${id}`);
+   // alert(`Ver más del producto con ID: ${id}`);
+    navigate(`/productInfo/${id}`);
   };
 
   const columns = [
