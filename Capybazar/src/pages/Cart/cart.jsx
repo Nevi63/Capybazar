@@ -3,11 +3,13 @@ import { Typography, Button, Box } from "@mui/material";
 import Swal from 'sweetalert2';
 import NumberInput from '../../components/numberInput/numberInput';
 import CircularProgress from '@mui/material/CircularProgress';
+import {useNavigate} from 'react-router-dom'
 
 function Cart() {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [user] = useState(JSON.parse(localStorage.getItem('user')) || {});
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCart();
@@ -47,6 +49,9 @@ function Cart() {
       console.error('❌ Error al actualizar cantidad', err);
     }
   };
+  const goToCheckout = ()=>{
+    navigate(`/checkout`);
+  }
 
   const handleRemove = async (productId) => {
     const confirm = await Swal.fire({
@@ -184,7 +189,7 @@ function Cart() {
           <p>Subtotal Productos:</p>
           <p>MXN {cart?.total || 0}</p>
         </Box>
-        <Button color='accent' variant='contained' sx={{ justifySelf: 'center' }}>Check Out</Button>
+        <Button onClick={goToCheckout} color='accent' variant='contained' sx={{ justifySelf: 'center' }}>Check Out</Button>
       </Box>
     </Box>
   );

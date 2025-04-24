@@ -7,7 +7,8 @@ const OrderSchema = new mongoose.Schema({
     items: [
         {
             productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-            quantity: { type: Number, required: true }
+            quantity: { type: Number, required: true },
+            price: { type: Number, required: true } // Precio en el momento de la compra
         }
     ],
     state: { type: String, enum: ['pendiente', 'pagado', 'enviado', 'entregado'], default: 'pendiente' },

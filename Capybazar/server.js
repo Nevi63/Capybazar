@@ -35,6 +35,9 @@ import cartRoutes from './routes/carts.js';
 app.use('/cart', cartRoutes);
 import wishlistRoutes from './routes/wishlists.js';
 app.use('/wishlist', wishlistRoutes);
+import ordersRoutes from './routes/orders.js';
+app.use('/orders', ordersRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
