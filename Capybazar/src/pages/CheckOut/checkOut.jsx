@@ -3,7 +3,7 @@ import { Box, TextField, Button, FormControl, InputLabel, MenuItem, Select } fro
 import { useNavigate } from 'react-router-dom';
 
 function checkOut() {
-  const [paymentMethod, setPaymentMethod] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState(-1);
   const [cart, setCart] = useState(null);
   const [user] = useState(JSON.parse(localStorage.getItem('user')) || {});
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ function checkOut() {
   };
   
   const handleSubmit = async () => {
-    if (!paymentMethod || !cart?.products?.length) return;
+    if (paymentMethod<0 || !cart?.products?.length) return;
 
     const order = {
       userId: user._id,
@@ -141,9 +141,47 @@ function checkOut() {
                     <MenuItem value={1}>Tarjeta de credito</MenuItem>
                 </Select>
             </FormControl>
-            <Button onClick={handleSubmit} color='success' variant='contained' sx={{my:2}}>Finalizar compra</Button>
         </span>
-
+        {paymentMethod === 1 && (
+          <Box sx={{my: 2}}>
+            <TextField
+              required
+              label="Número de tarjeta"
+              fullWidth
+              color="secondary"
+              variant="filled"
+              inputProps={{ maxLength: 16, pattern: "[0-9]{16}" }}
+              sx={{ mb: 2 }}
+            />
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                required
+                label="Fecha de expiración (MM/AA)"
+                color="secondary"
+                variant="filled"
+                inputProps={{ pattern: "(0[1-9]|1[0-2])\\/([0-9]{2})" }}
+                sx={{ flex: 1 }}
+              />
+              <TextField
+                required
+                label="CVV"
+                color="secondary"
+                variant="filled"
+                inputProps={{ maxLength: 3, pattern: "[0-9]{3}" }}
+                sx={{ flex: 1 }}
+              />
+            </Box>
+            <TextField
+              required
+              label="Nombre del titular"
+              fullWidth
+              color="secondary"
+              variant="filled"
+              sx={{ mt: 2 }}
+            />
+          </Box>
+        )}
+        <Button onClick={handleSubmit} color='success' variant='contained' sx={{my:2}}>Finalizar compra</Button>
       </Box>
       <Box sx={{backgroundColor:'primary.main', flexBasis:'25%', display:'flex', flexDirection:'column', p:3, height:'fit-content'}}>
         <h3>Productos</h3>

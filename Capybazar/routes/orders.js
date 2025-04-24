@@ -8,7 +8,6 @@ const router = express.Router();
 
 // 📌 Hacer una compra
 router.post('/', authMiddleware, async (req, res) => {
-    console.log('entro a compra')
     try {
       const { items, total, paymentMethod } = req.body;
   
@@ -25,6 +24,12 @@ router.post('/', authMiddleware, async (req, res) => {
       });
   
       await order.save();
+       // 🧮 Disminuir stock de los productos comprados
+      for (const item of items) {
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: -item.quantity }
+        });
+      }
   
       // 🧹 Vaciar carrito del usuario después de la compra
       await Cart.findOneAndUpdate(
@@ -36,6 +41,18 @@ router.post('/', authMiddleware, async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: 'Error al crear la orden', error: error.message });
     }
-  });
+});
 
+// 📌Obtener órdenes del usuario
+router.get('/my-orders', authMiddleware, async (req, res) => {
+  try {
+    const orders = await Order.find({ userId: req.user.userId })
+      .populate('items.productId')
+      .sort({ date: -1 }); // orden descendente por fecha
+
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener órdenes', error: error.message });
+  }
+});
 export default router;
