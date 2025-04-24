@@ -20,6 +20,17 @@ function purchaseHistory() {
     useEffect(() => {
         fetchOrders();
     }, []);
+    useEffect(() => {
+      if (filter === 30) {
+        setOrders(prev => [...prev].sort((a, b) => new Date(a.date) - new Date(b.date)));
+      } else if (filter === 40) {
+        setOrders(prev => [...prev].sort((a, b) => new Date(b.date) - new Date(a.date)));
+      } else if (filter === 10) {
+        setOrders(prev => [...prev].sort((a, b) => a.items[0]?.productId?.name?.localeCompare(b.items[0]?.productId?.name)));
+      } else if (filter === 20) {
+        setOrders(prev => [...prev].sort((a, b) => b.items[0]?.productId?.name?.localeCompare(a.items[0]?.productId?.name)));
+      }
+    }, [filter]);
 
     const handleChange = (event) => {
      setFilter(event.target.value);
