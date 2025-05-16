@@ -78,4 +78,47 @@ router.get('/my-orders', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Error al obtener órdenes', error: error.message });
   }
 });
+
+
+// 📌 Reporte de ventas por vendedor
+router.get('/seller-report', authMiddleware, async (req, res) => {
+  try {
+    const sellerId = req.user.userId;
+
+    const orders = await Order.find({ 'items.productId': { $exists: true } }).populate('items.productId');
+
+    const report = {};
+
+    for (const order of orders) {
+      for (const item of order.items) {
+        const product = item.productId;
+
+        if (!product || String(product.userId) !== sellerId) continue;
+
+        if (!report[product._id]) {
+          report[product._id] = {
+            name: product.name,
+            price: item.price,
+            totalSold: 0,
+            totalRevenue: 0,
+            rating: product.rating || 0
+          };
+        }
+
+        report[product._id].totalSold += item.quantity;
+        report[product._id].totalRevenue += item.price * item.quantity;
+      }
+    }
+
+    const result = Object.entries(report).map(([productId, data]) => ({
+      productId,
+      ...data
+    }));
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al generar el reporte', error: error.message });
+  }
+});
+
 export default router;

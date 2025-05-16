@@ -23,6 +23,7 @@ import Logout from './pages/logout';
 import { GuestRoute, GuestClientRoute, ClientRoute, SellerRoute, AdminRoute, AuthenticatedRoute } from './RouteGuards'; // Importa tus guardias
 import Navbar from './components/navbar/navbar';
 import Reports from './pages/Reports/reports';
+import ReportsAdmin from './pages/ReportsAdmin/reportsAdmin';
 import { useLocation } from 'react-router-dom';
 import OrderConfirmation from './pages/OrderConfirmation/orderConfirmation';
 function App() {
@@ -86,8 +87,8 @@ function App() {
           userType === 'admin' &&
           <Route element={<AdminRoute />}>
             <Route path="/productInfo/:productId" element={<ProductInformationAdmin />} />
-            <Route path="/" element={<Reports />} />
-            <Route path="/reports" element={<Reports />} />
+            <Route path="/" element={<ReportsAdmin />} />
+            <Route path="/reports" element={<ReportsAdmin />} />
             <Route path="/categoryList" element={<CategoryList />} />
             <Route path="/productList" element={<ProductListAdmin />} />
             <Route path="/reviewManagement" element={<ProductInformationAdmin />} />
