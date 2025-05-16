@@ -25,39 +25,70 @@ function checkOut() {
     }
   };
   
-  const handleSubmit = async () => {
-    if (paymentMethod < 0) {
-      return customSwal.fire({
-        title: 'Método de pago requerido',
-        text: 'Selecciona un método de pago para continuar.',
-        icon: 'warning',
-        iconColor: '#FFD700',
-        confirmButtonText: 'OK'
-      });
-    }
-  
-    if (!cart?.products?.length) {
-      return customSwal.fire({
-        title: 'Carrito vacío',
-        text: 'Agrega productos a tu carrito antes de finalizar la compra.',
-        icon: 'warning',
-        iconColor: '#FFD700',
-        confirmButtonText: 'OK'
-      });
+const handleSubmit = async () => {
+  if (paymentMethod < 0) {
+    return customSwal.fire({ title: 'Método de pago requerido', text: 'Selecciona un método de pago.', icon: 'warning' });
+  }
+
+  if (!cart?.products?.length) {
+    return customSwal.fire({ title: 'Carrito vacío', text: 'Agrega productos antes de finalizar la compra.', icon: 'warning' });
+  }
+
+  // Validaciones de campos
+  const calle = document.getElementById('calle')?.value.trim();
+  const colonia = document.getElementById('colonia')?.value.trim();
+  const numero = document.getElementById('numero')?.value.trim();
+  const municipio = document.getElementById('municipio')?.value.trim();
+  const estado = document.getElementById('estado')?.value.trim();
+  const cp = document.getElementById('cp')?.value.trim();
+
+  if (!calle || !colonia || !numero || !municipio || !estado || !cp) {
+    return customSwal.fire({ title: 'Campos obligatorios', text: 'Completa todos los campos de dirección.', icon: 'warning' });
+  }
+
+  if (isNaN(numero) || isNaN(cp)) {
+    return customSwal.fire({ title: 'Formato inválido', text: 'El número y el código postal deben ser numéricos.', icon: 'warning' });
+  }
+
+  if (paymentMethod === 1) {
+    const tarjeta = document.getElementById('tarjeta')?.value.trim();
+    const expiracion = document.getElementById('expiracion')?.value.trim();
+    const cvv = document.getElementById('cvv')?.value.trim();
+    const nombreTitular = document.getElementById('nombreTitular')?.value.trim();
+
+    const tarjetaRegex = /^\d{16}$/;
+    const expiracionRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    const cvvRegex = /^\d{3}$/;
+
+    if (!tarjetaRegex.test(tarjeta)) {
+      return customSwal.fire({ title: 'Número de tarjeta inválido', text: 'Debe contener exactamente 16 dígitos numéricos.', icon: 'warning' });
     }
 
-    const confirm = await customSwal.fire({
-      title: '¿Finalizar compra?',
-      text: '¿Estás seguro de que deseas realizar el pedido?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, confirmar',
-      cancelButtonText: 'Cancelar'
-    });
-  
-    if (!confirm.isConfirmed) return;
+    if (!expiracionRegex.test(expiracion)) {
+      return customSwal.fire({ title: 'Fecha de expiración inválida', text: 'Debe tener formato MM/AA.', icon: 'warning' });
+    }
+
+    if (!cvvRegex.test(cvv)) {
+      return customSwal.fire({ title: 'CVV inválido', text: 'Debe contener exactamente 3 dígitos numéricos.', icon: 'warning' });
+    }
+
+    if (!nombreTitular) {
+      return customSwal.fire({ title: 'Campo faltante', text: 'Debes ingresar el nombre del titular de la tarjeta.', icon: 'warning' });
+    }
+  }
+
+  const confirm = await customSwal.fire({
+    title: '¿Finalizar compra?',
+    text: '¿Estás seguro de que deseas realizar el pedido?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, confirmar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (!confirm.isConfirmed) return;
     const order = {
       userId: user._id,
       total: cart.total,
@@ -79,12 +110,25 @@ function checkOut() {
         },
         body: JSON.stringify(order)
       });
-
+    
       if (res.ok) {
-        navigate('/order-confirmation'); // redirige a una pantalla de confirmación
+        navigate('/order-confirmation');
+      } else {
+        const data = await res.json();
+        customSwal.fire({
+          title: 'Stock insuficiente',
+          text: data.message || 'No hay suficiente stock para completar la compra.',
+          icon: 'warning'
+        });
+        navigate('/cart');
       }
     } catch (err) {
       console.error('Error al crear la orden', err);
+      customSwal.fire({
+        title: 'Error',
+        text: 'No se pudo completar la compra. Intenta más tarde.',
+        icon: 'error'
+      });
     }
   };
   return (
@@ -95,7 +139,7 @@ function checkOut() {
         <Box sx={{my:2, display:'flex'}}>
           <TextField
             required
-            id="filled-required"
+            id="calle"
             label="Calle"
             defaultValue=""
             color="secondary"
@@ -106,7 +150,7 @@ function checkOut() {
           <TextField
             sx={{ml:1, flexBasis:'35%'}}
             required
-            id="filled-required"
+            id="colonia"
             label="Colonia"
             defaultValue=""
             color="secondary"
@@ -116,7 +160,7 @@ function checkOut() {
           <TextField
             sx={{ml:1, flexBasis:'15%'}}
             required
-            id="filled-required"
+            id="numero"
             label="Número"
             defaultValue=""
             color="secondary"
@@ -128,7 +172,7 @@ function checkOut() {
           <TextField
             sx={{flexBasis:'40%'}}
             required
-            id="filled-required"
+            id="municipio"
             label="Municipio"
             defaultValue=""
             color="secondary"
@@ -138,7 +182,7 @@ function checkOut() {
           <TextField
             sx={{ml:1, flexBasis:'40%'}}
             required
-            id="filled-required"
+            id="estado"
             label="Estado"
             defaultValue=""
             color="secondary"
@@ -148,7 +192,7 @@ function checkOut() {
           <TextField
             sx={{ml:1, flexBasis:'20%'}}
             required
-            id="filled-required"
+            id="cp"
             label="Código Postal:"
             defaultValue=""
             color="secondary"
@@ -176,6 +220,7 @@ function checkOut() {
           <Box sx={{my: 2}}>
             <TextField
               required
+              id="tarjeta"
               label="Número de tarjeta"
               fullWidth
               color="secondary"
@@ -186,6 +231,7 @@ function checkOut() {
             <Box sx={{ display: 'flex', gap: 2 }}>
               <TextField
                 required
+                id="expiracion"
                 label="Fecha de expiración (MM/AA)"
                 color="secondary"
                 variant="filled"
@@ -194,6 +240,7 @@ function checkOut() {
               />
               <TextField
                 required
+                id="cvv"
                 label="CVV"
                 color="secondary"
                 variant="filled"
@@ -203,6 +250,7 @@ function checkOut() {
             </Box>
             <TextField
               required
+              id="nombreTitular"
               label="Nombre del titular"
               fullWidth
               color="secondary"

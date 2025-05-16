@@ -6,9 +6,9 @@ import { Box, IconButton } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 
 const images = [
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScUD4YEbsDybK3wILoeKezLB-ANesskAAswQ&s",
-  "https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/software/switch/70010000083903/d551b2dee1b267f36000ce3ae52b20001cb26dc0fa0609a89defd7896e38ab66",
-  "https://img.rtve.es/imagenes/hatsune-miku-artista-pop-digital-cazador-cerebros/1689160036357.jpg",
+  "https://m.media-amazon.com/images/I/61c0zPrli6L._SX3000_.jpg",
+  "https://m.media-amazon.com/images/I/819WTGUnYlL._SX3000_.jpg",
+  "https://m.media-amazon.com/images/I/71FbgUpM+XL._SX3000_.jpg",
 ];
 // Botón personalizado para la izquierda
 const PrevArrow = ({ onClick }) => (

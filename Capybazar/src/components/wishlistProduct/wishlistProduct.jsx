@@ -1,6 +1,7 @@
 import  React, {useState, useEffect} from 'react'
 import { Collapse, Box, Button, Typography } from "@mui/material";
 import Swal from 'sweetalert2';
+import customSwal from "../../utils/customSwal";
 function wishlistProduct({product, onDelete }) {
     const [isDeleted, setIsDeleted] = useState(false);
     const handleDelete = async()=>{
@@ -27,7 +28,7 @@ function wishlistProduct({product, onDelete }) {
             }, 300); // Tiempo que dura la animación
         } catch (err) {
             console.error("❌ Error wishlist:", err);
-            Swal.fire({
+            customSwal.fire({
               title: "Error",
               text: "No se pudo actualizar la wishlist.",
               icon: "error"
@@ -55,7 +56,7 @@ function wishlistProduct({product, onDelete }) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Error al agregar al carrito');
     
-        Swal.fire({
+        customSwal.fire({
           title: '¡Agregado al carrito!',
           text: `${product.name} se agregó correctamente.`,
           icon: 'success',
@@ -64,7 +65,7 @@ function wishlistProduct({product, onDelete }) {
         });
       } catch (err) {
         console.error("❌ Error al agregar al carrito:", err);
-        Swal.fire({
+        customSwal.fire({
           title: "Error",
           text: "No se pudo agregar al carrito.",
           icon: "error"

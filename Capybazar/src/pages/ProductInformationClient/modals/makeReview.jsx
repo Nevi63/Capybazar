@@ -3,6 +3,7 @@ import { Box, TextField, Button, IconButton } from "@mui/material";
 import { Star, StarBorder } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 import './cat.css';
+import customSwal from '../../../utils/customSwal';
 
 function makeReview({ productId, onClose, onReviewCreated }) {
   const [review, setReview] = useState('');
@@ -10,7 +11,7 @@ function makeReview({ productId, onClose, onReviewCreated }) {
     
   const handleSubmit = async () => {
     if (!rating || !review) {
-      Swal.fire('Error', 'Debes escribir una reseña y asignar una calificación', 'error');
+      customSwal.fire('Error', 'Debes escribir una reseña y asignar una calificación', 'error');
       return;
     }
     try {
@@ -27,14 +28,14 @@ function makeReview({ productId, onClose, onReviewCreated }) {
       const data = await res.json();
 
       if (res.ok) {
-        Swal.fire('¡Gracias!', 'Tu reseña ha sido enviada', 'success');
+        customSwal.fire('¡Gracias!', 'Tu reseña ha sido enviada', 'success');
         onReviewCreated?.();
         onClose?.();
       } else {
-        Swal.fire('Error', data.message || 'No se pudo enviar la reseña', 'error');
+        customSwal.fire('Error', data.message || 'No se pudo enviar la reseña', 'error');
       }
     } catch (err) {
-      Swal.fire('Error', 'Error de conexión con el servidor', 'error');
+      customSwal.fire('Error', 'Error de conexión con el servidor', 'error');
     }
   };
 

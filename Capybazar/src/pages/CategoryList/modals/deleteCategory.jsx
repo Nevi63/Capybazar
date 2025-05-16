@@ -2,6 +2,7 @@ import React from 'react'
 import { Box, Button } from "@mui/material";
 import Swal from 'sweetalert2'
 import './cat.css'
+import customSwal from '../../../utils/customSwal';
 function deleteCategory({id, onClose, onCategoryDeleted }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,12 +29,12 @@ function deleteCategory({id, onClose, onCategoryDeleted }) {
         if (response.ok) {
             onCategoryDeleted();
             onClose();
-            await Swal.fire({
+            await customSwal.fire({
                 title: `Categoría eliminada exitosamente`,
                 icon: "success"
             });
         } else {
-            await Swal.fire({
+            await customSwal.fire({
                 title: "Error",
                 text: data.message,
                 icon: "error"

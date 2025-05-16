@@ -11,6 +11,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Link } from "react-router";
 import Swal from 'sweetalert2';
+import customSwal from '../../utils/customSwal';
 function signup() {
 
   const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ const handleSubmit = async (e) => {
 
     // Validar campos vacíos
     if (!firstName || !lastName || !email || !password || !birthdate) {
-      await Swal.fire({
+      await customSwal.fire({
         title: "Campos incompletos",
         text: "Por favor completa todos los campos.",
         icon: "warning"
@@ -52,7 +53,7 @@ const handleSubmit = async (e) => {
     // Validar correo electrónico
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      await Swal.fire({
+      await customSwal.fire({
         title: "Correo inválido",
         text: "Ingresa un correo electrónico válido.",
         icon: "error"
@@ -63,7 +64,7 @@ const handleSubmit = async (e) => {
     // Validar contraseña
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
     if (!passwordRegex.test(password)) {
-      await Swal.fire({
+      await customSwal.fire({
         title: "Contraseña inválida",
         text: "Debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.",
         icon: "error"
@@ -80,7 +81,7 @@ const handleSubmit = async (e) => {
 
         const data = await response.json();
         if (response.ok) {
-            await Swal.fire({
+            await customSwal.fire({
               title: "Se registro el usuario exitosamente",
               text: "✅✅✅",
               icon: "success"
@@ -88,7 +89,7 @@ const handleSubmit = async (e) => {
             setFormData({ firstName: '', lastName: '', email: '', password: '', userType: 'cliente', birthdate: null });
         } else {
             
-          await Swal.fire({
+          await customSwal.fire({
             title: "Sucedio un error",
             text: data.message,
             icon: "error"

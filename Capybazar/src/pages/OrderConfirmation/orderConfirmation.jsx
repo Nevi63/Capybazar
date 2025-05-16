@@ -2,9 +2,22 @@ import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function orderConfirmation() {
   const navigate = useNavigate();
+
+    useEffect(() => {
+      const random = Math.floor(Math.random() * 90) + 1; // 1 a 5
+      const selectedAudio = random === 90 ? 'homero.mp3' : 'capybaracorto.mp3';
+        console.log(random, selectedAudio);
+      const audio = new Audio(`/sounds/${selectedAudio}`);
+      audio.volume = 0.8;
+
+    audio.play().catch(err => {
+      console.warn('🔇 El navegador bloqueó la reproducción automática:', err);
+    });
+  }, []);
 
   return (
     <Box 

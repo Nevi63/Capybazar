@@ -6,6 +6,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import Swal from 'sweetalert2'
 import CircularProgress from '@mui/material/CircularProgress';
 import {useNavigate} from 'react-router-dom'
+import customSwal from '../../utils/customSwal';
 
 function productListAdmin() {
   const [loading, setLoading] = useState(true);
@@ -71,13 +72,13 @@ function productListAdmin() {
         console.log("Respuesta del servidor:", data); // 👀 Depuración
   
         if (response.ok) {
-            await Swal.fire({
+            await customSwal.fire({
               title: "Producto eliminado exitosamente",
               text: "✅✅✅",
               icon: "success"
             });
         } else {  
-            await Swal.fire({
+            await customSwal.fire({
               title: "Sucedio un error",
               text: data.message,
               icon: "error"

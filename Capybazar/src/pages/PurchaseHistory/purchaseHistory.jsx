@@ -6,6 +6,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useNavigate} from 'react-router-dom'
+import Swal from 'sweetalert2';
+import customSwal from "../../utils/customSwal";
 
 function purchaseHistory() {
     const [filter, setFilter] = useState('');
@@ -35,6 +37,45 @@ function purchaseHistory() {
     const handleChange = (event) => {
      setFilter(event.target.value);
     };
+
+    const handleAddToCart = async (productId) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('token');
+
+  try {
+    const res = await fetch(`http://localhost:5000/cart/${user._id}/add`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        productId,
+        quantity: 1,
+        mode: 'add'
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Error al agregar al carrito');
+
+    customSwal.fire({
+      title: '¡Agregado al carrito!',
+      text: `El producto se agregó correctamente.`,
+      icon: 'success',
+      timer: 1500,
+      showConfirmButton: false
+    });
+  } catch (err) {
+    console.error("❌ Error al agregar al carrito:", err);
+    customSwal.fire({
+      title: "Error",
+      text: "No se pudo agregar al carrito.",
+      icon: "error"
+    });
+  }
+    };
+
 
     const fetchOrders = async() =>{
         try {
@@ -105,7 +146,14 @@ if (loading) {
                        </Box>
                      </Box>
                      <Box className="botones" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', color: 'white', mx: 1 }}>
-                       <Button variant='contained' color='accent'>Agregar al carrito</Button>
+                      <Button
+                        variant="contained"
+                        color="accent"
+                        onClick={() => handleAddToCart(item.productId._id)} // ✅ función anónima
+                      >
+                        Agregar al carrito
+                      </Button>
+
                        <Button onClick={()=>{seeProduct(item.productId._id)}} variant='contained' color='accent'>Ver Producto</Button>
                      </Box>
                    </Box>

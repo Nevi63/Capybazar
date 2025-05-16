@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button } from "@mui/material";
 import Swal from 'sweetalert2'
 import './cat.css'
+import customSwal from '../../../utils/customSwal';
 function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
     const [nombre, setNombre] = useState('');
 
@@ -21,7 +22,7 @@ function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
         
         if (!nombre.trim()) {
             // Mostrar SweetAlert si el nombre está vacío
-            await Swal.fire({
+            await customSwal.fire({
                 title: "Error",
                 text: "El nombre de la categoría no puede estar vacío.",
                 icon: "error"
@@ -54,7 +55,7 @@ function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
             console.log("Respuesta del servidor:", data); 
     
             if (response.ok) {
-                await Swal.fire({
+                await customSwal.fire({
                     title: `Categoría ${action === 'edit' ? 'editada' : 'creada'} exitosamente`,
                     icon: "success"
                 });
@@ -62,7 +63,7 @@ function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
                 onCategoryCreated();
                 onClose();
             } else {
-                await Swal.fire({
+                await customSwal.fire({
                     title: "Error",
                     text: data.message,
                     icon: "error"
@@ -70,7 +71,7 @@ function category({ action, id, nombreProp, onClose, onCategoryCreated }) {
             }
         } catch (error) {
             console.error('Error al crear la categoría:', error);
-            await Swal.fire({
+            await customSwal.fire({
                 title: "Error",
                 text: "Hubo un error al procesar la solicitud.",
                 icon: "error"

@@ -5,43 +5,66 @@ import Cart from '../models/Cart.js'; // Asegúrate de tener este modelo
 import authMiddleware from '../middlewares/auth.js'; 
 
 const router = express.Router();
-
 // 📌 Hacer una compra
 router.post('/', authMiddleware, async (req, res) => {
-    try {
-      const { items, total, paymentMethod } = req.body;
-  
-      if (!items?.length || !total || !paymentMethod) {
-        return res.status(400).json({ message: 'Datos incompletos' });
+  try {
+    const { items, total, paymentMethod } = req.body;
+
+    if (!items?.length || !total || !paymentMethod) {
+      return res.status(400).json({ message: 'Datos incompletos' });
+    }
+
+    // 🔍 Verificar stock antes de continuar
+    for (const item of items) {
+      const product = await Product.findById(item.productId);
+
+      if (!product) {
+        return res.status(404).json({ message: 'Producto no encontrado' });
       }
-  
-      const order = new Order({
-        userId: req.user.userId,
-        items,
-        total,
-        paymentMethod,
-        createdAt: new Date()
-      });
-  
-      await order.save();
-       // 🧮 Disminuir stock de los productos comprados
-      for (const item of items) {
-        await Product.findByIdAndUpdate(item.productId, {
-          $inc: { stock: -item.quantity }
+
+      if (product.deletedAt) {
+        return res.status(400).json({ message: `El producto "${product.name}" ya no está disponible.` });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          message: `No hay suficiente stock para el producto "${product.name}". Solo hay ${product.stock} disponibles.`,
+          maxAvailable: product.stock,
+          productId: product._id
         });
       }
-  
-      // 🧹 Vaciar carrito del usuario después de la compra
-      await Cart.findOneAndUpdate(
-        { userId: req.user.userId },
-        { products: [], total: 0 }
-      );
-  
-      res.status(201).json({ message: 'Orden creada y carrito vaciado', order });
-    } catch (error) {
-      res.status(500).json({ message: 'Error al crear la orden', error: error.message });
     }
+
+    // ✅ Crear orden si pasa la validación
+    const order = new Order({
+      userId: req.user.userId,
+      items,
+      total,
+      paymentMethod,
+      createdAt: new Date()
+    });
+
+    await order.save();
+
+    // 🧮 Disminuir stock
+    for (const item of items) {
+      await Product.findByIdAndUpdate(item.productId, {
+        $inc: { stock: -item.quantity }
+      });
+    }
+
+    // 🧹 Vaciar carrito
+    await Cart.findOneAndUpdate(
+      { userId: req.user.userId },
+      { products: [], total: 0 }
+    );
+
+    res.status(201).json({ message: 'Orden creada y carrito vaciado', order });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al crear la orden', error: error.message });
+  }
 });
+
 
 // 📌Obtener órdenes del usuario
 router.get('/my-orders', authMiddleware, async (req, res) => {

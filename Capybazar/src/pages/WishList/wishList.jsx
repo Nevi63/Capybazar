@@ -7,6 +7,7 @@ import Select from '@mui/material/Select';
 import WishlistProduct from '../../components/wishlistProduct/wishlistProduct';
 import CircularProgress from '@mui/material/CircularProgress';
 
+
 function wishList() {
     const [wishlist, setWishlist] = useState([]);
     const [filteredWishlist, setFilteredWishlist] = useState([]);
