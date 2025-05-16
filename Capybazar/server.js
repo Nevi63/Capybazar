@@ -39,6 +39,8 @@ import ordersRoutes from './routes/orders.js';
 app.use('/orders', ordersRoutes);
 import reviewsRoutes from './routes/reviews.js';
 app.use('/reviews', reviewsRoutes);
+import adminReportRoutes from './routes/adminReport.js';
+app.use('/adminReport', adminReportRoutes);
 
 
 const PORT = process.env.PORT || 5000;
