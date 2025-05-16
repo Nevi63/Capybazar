@@ -9,8 +9,19 @@ function orderConfirmation() {
 
     useEffect(() => {
       const random = Math.floor(Math.random() * 90) + 1; // 1 a 5
-      const selectedAudio = random === 90 ? 'homero.mp3' : 'capybaracorto.mp3';
-        console.log(random, selectedAudio);
+      var selectedAudio = 'capybaracorto.mp3';
+      if(random === 90){
+        const random2 = Math.floor(Math.random() * 2) + 1; // 1 o 2
+        if(random2 === 1){
+          selectedAudio = 'homero.mp3';
+          console.log( "gano el 50 50 gg");
+        }else{
+          selectedAudio = 'sefuelaluz.mp3';
+          console.log( "perdio el 50 50 gg");
+        }
+
+      }
+      console.log(random, selectedAudio);
       const audio = new Audio(`/sounds/${selectedAudio}`);
       audio.volume = 0.8;
 
