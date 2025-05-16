@@ -1,7 +1,7 @@
 import express from 'express';
 import Product from '../models/Product.js';
 import authMiddleware from '../middlewares/auth.js';
-
+import Cart from '../models/Cart.js'; // Asegúrate de tener este import
 const router = express.Router();
 
 // 📌 Crear un nuevo producto → POST /products/create
@@ -235,6 +235,9 @@ router.delete('/:productId', authMiddleware, async (req, res) => {
       product.deletedAt = new Date();
       await product.save();
 
+      // 🔄 Eliminar el producto de todos los carritos
+    await removeProductFromCarts(productId);
+
       res.json({ message: 'Producto eliminado (baja lógica)', product });
 
   } catch (error) {
@@ -265,6 +268,9 @@ router.delete('/admin/:productId', authMiddleware, async (req, res) => {
     // Baja lógica: asignar la fecha actual a `deletedAt`
     product.deletedAt = new Date();
     await product.save();
+    // 🔄 Eliminar el producto de todos los carritos
+    await removeProductFromCarts(productId);
+
 
     res.json({ message: 'Producto eliminado (baja lógica)', product });
 
@@ -273,5 +279,27 @@ router.delete('/admin/:productId', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Error en el servidor', error: error.message });
   }
 });
+
+
+// 📌 Función auxiliar para remover producto de carritos y recalcular total
+const removeProductFromCarts = async (productId) => {
+  const affectedCarts = await Cart.find({ 'products.productId': productId });
+  for (const cart of affectedCarts) {
+    cart.products = cart.products.filter(p => p.productId.toString() !== productId);
+    cart.total = await calculateCartTotal(cart.products);
+    await cart.save();
+  }
+};
+
+const calculateCartTotal = async (products) => {
+  let total = 0;
+  for (const item of products) {
+    const prod = await Product.findById(item.productId);
+    if (prod && !prod.deletedAt) {
+      total += prod.price * item.quantity;
+    }
+  }
+  return total;
+};
 
 export default router;
