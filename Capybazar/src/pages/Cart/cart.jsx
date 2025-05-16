@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import NumberInput from '../../components/numberInput/numberInput';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useNavigate} from 'react-router-dom'
+import customSwal from '../../utils/customSwal';
 
 function Cart() {
   const [cart, setCart] = useState(null);
@@ -54,10 +55,11 @@ function Cart() {
   }
 
   const handleRemove = async (productId) => {
-    const confirm = await Swal.fire({
+    const confirm = await customSwal.fire({
       title: '¿Eliminar producto?',
       text: "Esta acción quitará el producto del carrito.",
       icon: 'warning',
+      iconColor: '#FFD700',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
@@ -84,10 +86,11 @@ function Cart() {
   };
 
   const handleClearCart = async () => {
-    const confirm = await Swal.fire({
+    const confirm = await customSwal.fire({
       title: '¿Vaciar carrito?',
       text: "Esta acción eliminará todos los productos del carrito.",
       icon: 'warning',
+      iconColor: '#FFD700',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',

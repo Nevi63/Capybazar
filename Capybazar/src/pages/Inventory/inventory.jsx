@@ -3,7 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import {Box, Button} from '@mui/material';
 import TextField from '@mui/material/TextField';
-import Swal from 'sweetalert2'
+import customSwal from '../../utils/customSwal';
 import CircularProgress from '@mui/material/CircularProgress';
 function Inventory() {
     const [loading, setLoading] = useState(true);
@@ -53,7 +53,7 @@ function Inventory() {
 
             await Promise.all(promises);
             
-            await Swal.fire({
+            await customSwal.fire({
               title: "Cambios guardados correctamente",
               text: "✅✅✅",
               icon: "success"
@@ -62,7 +62,7 @@ function Inventory() {
             fetchProducts();  // Vuelve a cargar los productos
         } catch (error) { 
             console.error('❌ Error al guardar cambios:', error);
-            await Swal.fire({
+            await customSwal.fire({
               title: "Sucedio un error",
               text: 'Error al guardar cambios',
               icon: "error"
@@ -88,7 +88,7 @@ function Inventory() {
                 )
             );
         } else {
-            Swal.fire({
+            customSwal.fire({
                 title: "Cantidad no válida",
                 text: "La cantidad debe ser un número positivo.",
                 icon: "warning"

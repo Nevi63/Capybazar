@@ -7,7 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import Review from '../../components/review/review';
-import Swal from 'sweetalert2';
+import customSwal from '../../utils/customSwal';
 import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
 import MakeReview from './modals/makeReview';
@@ -98,7 +98,7 @@ function productInformationClient() {
       const token = localStorage.getItem('token');
   
       if (!user || !token) {
-        return Swal.fire({
+        return customSwal.fire({
           title: "Inicia sesión",
           text: "Debes iniciar sesión para usar la wishlist.",
           icon: "warning"
@@ -124,7 +124,7 @@ function productInformationClient() {
         if (!res.ok) throw new Error(data.message || 'Error en wishlist');
       } catch (err) {
         console.error("❌ Error wishlist:", err);
-        Swal.fire({
+        customSwal.fire({
           title: "Error",
           text: "No se pudo actualizar la wishlist.",
           icon: "error"
@@ -191,7 +191,7 @@ function productInformationClient() {
   
       const data = await res.json();
       if (res.ok) {
-        Swal.fire({
+        customSwal.fire({
           title: '¡Agregado al carrito!',
           text: `${product.name} se agregó correctamente.`,
           icon: 'success',
@@ -203,7 +203,7 @@ function productInformationClient() {
       }
     } catch (err) {
       console.error('❌ Error al agregar al carrito:', err);
-      Swal.fire({
+      customSwal.fire({
         title: 'Error',
         text: 'No se pudo agregar al carrito.',
         icon: 'error'

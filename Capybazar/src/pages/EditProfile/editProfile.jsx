@@ -4,7 +4,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from 'dayjs';
-import Swal from 'sweetalert2'
+import customSwal from '../../utils/customSwal';
 import { useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -57,7 +57,7 @@ function editProfile() {
   const editUserInfo = async () =>{
 
         if (!firstName.trim() || !lastName.trim()) {
-           await Swal.fire({
+           await customSwal.fire({
             title: "Campos incompletos",
             text: "Nombre y apellido son obligatorios.",
             icon: "warning"
@@ -66,7 +66,7 @@ function editProfile() {
         }
         
         if (!birthdate || !birthdate.isValid()) {
-          await Swal.fire({
+          await customSwal.fire({
            title: "Campos incompletos",
            text: "Fecha de nacimiento inválida.",
            icon: "warning"
@@ -75,7 +75,7 @@ function editProfile() {
         }
         
         if (birthdate.isAfter(dayjs())) {
-          await Swal.fire({
+          await customSwal.fire({
            title: "Campos incompletos",
            text: "La fecha de nacimiento no puede ser en el futuro.",
            icon: "warning"
@@ -87,7 +87,7 @@ function editProfile() {
           const phoneRegex = /^\d{10}$/;
         
           if (!phoneRegex.test(phoneNumber)) {
-            await Swal.fire({
+            await customSwal.fire({
               title: "Teléfono inválido",
               text: "El número de teléfono debe tener exactamente 10 dígitos.",
               icon: "warning"
@@ -96,7 +96,7 @@ function editProfile() {
           }
         
           if (!address.trim()) {
-            await Swal.fire({
+            await customSwal.fire({
               title: "Dirección inválida",
               text: "La dirección no puede estar vacía.",
               icon: "warning"
@@ -133,7 +133,7 @@ function editProfile() {
             console.log("Respuesta del servidor:", data); // 👀 Depuración
 
             if (response.ok) {
-                 await Swal.fire({
+                 await customSwal.fire({
                    title: "Usuario modificado exitosamente",
                    text: "✅✅✅",
                    icon: "success"
@@ -149,7 +149,7 @@ function editProfile() {
 
   const changePassword = async () => {
     if (password !== passwordConfirmation) {
-      await Swal.fire({
+      await customSwal.fire({
         title: "Contraseña inválida",
         text: "Las contraseñas no coinciden",
         icon: "error"
@@ -157,7 +157,7 @@ function editProfile() {
       return;
     }
     if (password === '' || passwordConfirmation === '') {
-      await Swal.fire({
+      await customSwal.fire({
         title: "Contraseña inválida",
         text: "No se admiten contraseñas vacias",
         icon: "error"
@@ -166,7 +166,7 @@ function editProfile() {
     }
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
     if (!passwordRegex.test(password)) {
-      await Swal.fire({
+      await customSwal.fire({
         title: "Contraseña inválida",
         text: "Debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.",
         icon: "error"
@@ -187,7 +187,7 @@ function editProfile() {
 
       const data = await response.json();
       if (response.ok) {
-        await Swal.fire({
+        await customSwal.fire({
           title: "Contraseña modificada exitosamente",
           text: "✅✅✅",
           icon: "success"
@@ -230,13 +230,13 @@ function editProfile() {
 
         if (response.ok) {
           
-          await Swal.fire({
+          await customSwal.fire({
             title: "Foto de perfil actualizada exitosamente",
             text: "✅✅✅",
             icon: "success"
           }); // Actualizar la foto mostrada
         } else {
-          await Swal.fire({
+          await customSwal.fire({
             title: "Sucedio un error",
             text: 'Sucedio un error al subir la foto',
             icon: "error"
@@ -251,7 +251,7 @@ function editProfile() {
 
   const handleDelete = async(e) =>{
     
-    const confirm = await Swal.fire({
+    const confirm = await customSwal.fire({
       title: '¿Estás seguro?',
       text: "Esta acción eliminará tu cuenta permanentemente",
       icon: 'warning',
@@ -276,14 +276,14 @@ function editProfile() {
 
       const data = await response.json();
       if (response.ok) {
-        await Swal.fire({
+        await customSwal.fire({
           title: "Cuenta eliminada exitosamente",
           text: "Esperamos verte pronto 😊",
           icon: "success"
         });
         navigate('/logout')
       } else {
-        Swal.fire('Error', data.message || 'Error al eliminar la cuenta', 'error');
+        customSwal.fire('Error', data.message || 'Error al eliminar la cuenta', 'error');
       }
     } catch (error) {
       console.error('Error al cambiar la contraseña:', error);

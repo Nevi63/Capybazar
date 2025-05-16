@@ -5,6 +5,8 @@ import StarIcon from "@mui/icons-material/Star";
 import Review from '../../components/review/review';
 import CircularProgress from '@mui/material/CircularProgress';
 function productInformation() {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
   
     const [loading, setLoading] = useState(true);
     const { productId } = useParams();
@@ -16,9 +18,14 @@ function productInformation() {
     const [imageBase64, setImageBase64] = useState('');
     const [rating, setRating] = useState(0);
     const navigate = useNavigate();
+    const [reviews, setReviews] = useState([]);
 
     useEffect(() => {
-        fetchProduct();
+      const fetchData = async () => {
+        await Promise.all([fetchProduct(), fetchReviews()]);
+        setLoading(false);
+      };
+      fetchData();
     }, []);
   
   const fetchProduct = async () =>{
@@ -41,6 +48,21 @@ function productInformation() {
       } catch (error) {
         console.error('Error al obtener el producto:', error);
       }
+  }
+  const fetchReviews = async() =>{
+    try {
+      const res = await fetch(`http://localhost:5000/reviews/${productId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        // Verifica si el producto está en la wishlist
+        console.log(data);
+        setReviews(data);
+      }
+    } catch (err) {
+      console.error("❌ Error al obtener reviews:", err);
+    }
   }
   const renderStars = () => {
     const stars = [];
@@ -108,10 +130,13 @@ function productInformation() {
             <h1 style={{fontWeight: 'normal', margin: 0}}>Reviews</h1>
         </div>
         <div>
-            <Review></Review>
-            <Review></Review>
-            <Review></Review>
-          
+          {reviews.length === 0 ? (
+            <p style={{ color: 'gray', textAlign: 'center' }}>Todavía no hay reviews para este producto.</p>
+          ) : (
+            reviews.map((rev, idx) => (
+              <Review key={idx} {...rev} />
+            ))
+          )}
         </div>
       </Box>
     </div>

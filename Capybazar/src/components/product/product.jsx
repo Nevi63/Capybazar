@@ -6,7 +6,10 @@ import StarIcon from "@mui/icons-material/Star";
 import image from "../../assets/images/image.png";
 import {useNavigate} from 'react-router-dom'
 import Swal from 'sweetalert2';
+import customSwal from "../../utils/customSwal";
 
+
+//import capyGif from '../../assets/images'
 function Product({ product }) {
   const [liked, setLiked] = useState(false);
   const [hover, setHover] = useState(false);
@@ -70,7 +73,7 @@ function Product({ product }) {
   
       const data = await res.json();
       if (res.ok) {
-        Swal.fire({
+        customSwal.fire({
           title: '¡Agregado al carrito!',
           text: `${product.name} se agregó correctamente.`,
           icon: 'success',
@@ -82,7 +85,7 @@ function Product({ product }) {
       }
     } catch (err) {
       console.error('❌ Error al agregar al carrito:', err);
-      Swal.fire({
+      customSwal.fire({
         title: 'Error',
         text: 'No se pudo agregar al carrito.',
         icon: 'error'
@@ -98,10 +101,11 @@ function Product({ product }) {
     const token = localStorage.getItem('token');
 
     if (!user || !token) {
-      return Swal.fire({
+      return customSwal.fire({
         title: "Inicia sesión",
         text: "Debes iniciar sesión para usar la wishlist.",
-        icon: "warning"
+        icon: "warning",
+        iconColor: '#FFD700',
       });
     }
 
@@ -124,7 +128,7 @@ function Product({ product }) {
       if (!res.ok) throw new Error(data.message || 'Error en wishlist');
     } catch (err) {
       console.error("❌ Error wishlist:", err);
-      Swal.fire({
+      customSwal.fire({
         title: "Error",
         text: "No se pudo actualizar la wishlist.",
         icon: "error"
