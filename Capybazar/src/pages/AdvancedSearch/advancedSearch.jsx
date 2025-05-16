@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
 import { debounce } from 'lodash';
 import Swal from 'sweetalert2';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import customSwal from '../../utils/customSwal';
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -64,7 +64,7 @@ function AdvancedSearch() {
       .then(data => setResults(data))
       .catch(err => {
         console.error('❌ Error al buscar productos:', err);
-        Swal.fire({
+        customSwal.fire({
           title: "Sesión expirada",
           text: "No autorizado. Inicia sesión nuevamente.",
           icon: "error"
@@ -177,8 +177,14 @@ function AdvancedSearch() {
         <Box sx={{
           display: "flex",
           flexWrap: "wrap",
-          px: 0,
-          justifyContent: { xs: "center", md: "flex-start" },
+          justifyContent: { xs: 'center', sm: 'center', md: "flex-start" },
+          alignItems: "stretch",
+          gap: 2,
+          width: "90%",
+          height: 'fit-content',
+          mx: 'auto',
+          p: 4,
+          boxSizing: "border-box",
         }}>
           {results.length === 0 ? (
             <Typography sx={{ mt: 4, color: 'gray', width: '100%', textAlign: 'center' }}>

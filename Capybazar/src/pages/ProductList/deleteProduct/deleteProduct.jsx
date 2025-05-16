@@ -1,7 +1,6 @@
 import React from 'react'
 import { Box, Button } from "@mui/material";
-import Swal from 'sweetalert2';
-
+import customSwal from '../../../utils/customSwal';
 function deleteProduct({id, onClose, onProductDeleted }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,13 +27,13 @@ function deleteProduct({id, onClose, onProductDeleted }) {
         if (response.ok) {
             onProductDeleted();
             onClose();
-            await Swal.fire({
+            await customSwal.fire({
               title: "Producto eliminado exitosamente",
               text: "✅✅✅",
               icon: "success"
             });
         } else {  
-            await Swal.fire({
+            await customSwal.fire({
               title: "Sucedio un error",
               text: data.message,
               icon: "error"

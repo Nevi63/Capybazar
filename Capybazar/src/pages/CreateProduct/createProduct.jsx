@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import UploadIcon from '@mui/icons-material/Upload';
 import Swal from 'sweetalert2'
-
+import customSwal from '../../utils/customSwal';
 function createProduct() {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
@@ -83,7 +83,7 @@ function createProduct() {
 
       const result = await response.json();
       if (response.ok) {
-        await Swal.fire({
+        await customSwal.fire({
           title: "✅ Producto creado correctamente",
           text: "✅✅✅",
           icon: "success"
@@ -95,7 +95,7 @@ function createProduct() {
         setDescription('');
         setImageBase64('');
       } else {
-        await Swal.fire({
+        await customSwal.fire({
           title: "Sucedio un error",
           text: result.message,
           icon: "error"

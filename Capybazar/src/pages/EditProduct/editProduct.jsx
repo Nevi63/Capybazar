@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import UploadIcon from '@mui/icons-material/Upload';
 import Swal from 'sweetalert2'
+import customSwal from '../../utils/customSwal';
 import CircularProgress from '@mui/material/CircularProgress';
 
 function editProduct() {
@@ -109,15 +110,15 @@ function editProduct() {
 
       const result = await response.json();
       if (response.ok) {
-         await Swal.fire({
-           title: "✅ Producto editadp correctamente",
+         await customSwal.fire({
+           title: "✅ Producto editado correctamente",
            text: "✅✅✅",
            icon: "success"
          });
         navigate('/productList');  // Redirige a la lista de productos
 
       } else {
-        await Swal.fire({
+        await customSwal.fire({
           title: "Sucedio un error",
           text: result.message,
           icon: "error"

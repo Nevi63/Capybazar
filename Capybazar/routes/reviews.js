@@ -82,12 +82,11 @@ router.post('/', authMiddleware, async (req, res) => {
       res.status(500).json({ message: 'Error al crear la review', error: error.message });
     }
   });
-  router.delete('/:reviewId', authMiddleware, async (req, res) => {
+router.delete('/:reviewId', authMiddleware, async (req, res) => {
     const { reviewId } = req.params;
-    const userId = req.user.userId;
-    console.log('HUH')
   
     try {
+      // Marca la review como eliminada
       const review = await Review.findOneAndUpdate(
         { _id: reviewId },
         { deletedAt: new Date() },
@@ -98,10 +97,25 @@ router.post('/', authMiddleware, async (req, res) => {
         return res.status(404).json({ message: 'Review no encontrada o ya eliminada' });
       }
   
-      res.json({ message: 'Review eliminada' });
+      // Recalcular el rating del producto
+      const productId = review.productId;
+  
+      const activeReviews = await Review.find({
+        productId,
+        deletedAt: null
+      });
+  
+      const newRating =
+        activeReviews.length > 0
+          ? activeReviews.reduce((acc, r) => acc + r.rating, 0) / activeReviews.length
+          : 0;
+  
+      await Product.findByIdAndUpdate(productId, { rating: newRating });
+  
+      res.json({ message: 'Review eliminada y rating actualizado', newRating });
     } catch (error) {
       res.status(500).json({ message: 'Error al eliminar la review', error: error.message });
     }
-  });
+});
   
 export default router;  

@@ -4,7 +4,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import bgImage from '../../assets/images/capybarabackground3.jpg';
 import { Link, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
-
+import customSwal from '../../utils/customSwal';
 function login() {
 
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ function login() {
 
           const data = await response.json();
           if (response.ok) {
-              await Swal.fire({
+              await customSwal.fire({
                 title: "Inicio de sesión exitoso",
                 text: "✅✅✅",
                 icon: "success"

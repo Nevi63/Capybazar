@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, TextField, Button, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
-
+import customSwal from '../../utils/customSwal';
 function checkOut() {
   const [paymentMethod, setPaymentMethod] = useState(-1);
   const [cart, setCart] = useState(null);
@@ -26,8 +26,38 @@ function checkOut() {
   };
   
   const handleSubmit = async () => {
-    if (paymentMethod<0 || !cart?.products?.length) return;
+    if (paymentMethod < 0) {
+      return customSwal.fire({
+        title: 'Método de pago requerido',
+        text: 'Selecciona un método de pago para continuar.',
+        icon: 'warning',
+        iconColor: '#FFD700',
+        confirmButtonText: 'OK'
+      });
+    }
+  
+    if (!cart?.products?.length) {
+      return customSwal.fire({
+        title: 'Carrito vacío',
+        text: 'Agrega productos a tu carrito antes de finalizar la compra.',
+        icon: 'warning',
+        iconColor: '#FFD700',
+        confirmButtonText: 'OK'
+      });
+    }
 
+    const confirm = await customSwal.fire({
+      title: '¿Finalizar compra?',
+      text: '¿Estás seguro de que deseas realizar el pedido?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, confirmar',
+      cancelButtonText: 'Cancelar'
+    });
+  
+    if (!confirm.isConfirmed) return;
     const order = {
       userId: user._id,
       total: cart.total,

@@ -24,6 +24,7 @@ import { GuestRoute, GuestClientRoute, ClientRoute, SellerRoute, AdminRoute, Aut
 import Navbar from './components/navbar/navbar';
 import Reports from './pages/Reports/reports';
 import { useLocation } from 'react-router-dom';
+import OrderConfirmation from './pages/OrderConfirmation/orderConfirmation';
 function App() {
   const userType = localStorage.getItem("userType") || 'guest';
 
@@ -64,6 +65,7 @@ function App() {
             <Route path="/wishlist" element={<WishList />} />
             <Route path="/purchaseHistory" element={<PurchaseHistory />} />
             <Route path="/checkOut" element={<CheckOut />} />
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
           </Route>
         }
 
