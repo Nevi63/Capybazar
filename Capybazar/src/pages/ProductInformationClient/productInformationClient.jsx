@@ -170,6 +170,13 @@ function productInformationClient() {
     }
     return stars;
   };
+  const handleReviewCreated = () => {
+    const fetchData = async () => {
+      await Promise.all([fetchProduct(), fetchWishlist(), fetchReviews()]);
+      setLoading(false);
+    };
+    fetchData();
+  };
 
 
   const AddToCart = async (event) => {
@@ -296,6 +303,7 @@ function productInformationClient() {
         <MakeReview 
           productId={productId}
           onClose={handleClose}
+          onReviewCreated={handleReviewCreated}
         />
       </Box>
     </Modal>

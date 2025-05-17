@@ -31,6 +31,7 @@ function makeReview({ productId, onClose, onReviewCreated }) {
         customSwal.fire('¡Gracias!', 'Tu reseña ha sido enviada', 'success');
         onReviewCreated?.();
         onClose?.();
+        
       } else {
         customSwal.fire('Error', data.message || 'No se pudo enviar la reseña', 'error');
       }

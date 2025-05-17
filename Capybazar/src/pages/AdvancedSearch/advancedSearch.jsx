@@ -4,11 +4,14 @@ import {
   FormControl, Select, List, ListItem, ListItemButton, ListItemText
 } from '@mui/material';
 import Product from '../../components/product/product';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
 import Swal from 'sweetalert2';
 import CircularProgress from '@mui/material/CircularProgress';
 import customSwal from '../../utils/customSwal';
+
+
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -25,7 +28,7 @@ function AdvancedSearch() {
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   // Obtener categorías
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -68,6 +71,9 @@ function AdvancedSearch() {
           title: "Sesión expirada",
           text: "No autorizado. Inicia sesión nuevamente.",
           icon: "error"
+        }).then(() => {
+          navigate('/');
+          window.location.reload();
         });
       });
   }, 500);

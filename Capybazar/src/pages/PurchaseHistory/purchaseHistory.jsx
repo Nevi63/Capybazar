@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Button, Box } from "@mui/material";
+import { Button, Box, Typography } from "@mui/material";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -128,42 +128,61 @@ if (loading) {
             </FormControl>
         </Box>
         <Box sx={{display:'flex', flexDirection:'column'}}>
-        {orders.map((order, idx) => (
-            <Box key={idx}>
-                <p>Compra del {new Date(order.date).toLocaleString()}</p>
-                <p>Estado: pendiente</p>
-                <Box sx={{ backgroundColor: 'primary.main', display: 'flex', flexDirection: 'column', px: 3 }}>
-                {order.items.map((item, i) => (
-                   <React.Fragment key={i}>
-                   <Box className="ProductPurchaseHistory" sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
-                     <Box className="ProductInformation" sx={{ display: 'flex' }}>
-                       <Box component="img" sx={{ width: '120px', height: '120px', borderRadius: '10px', mr: 2 }} src={item.productId.image || 'fallback.jpg'} />
-                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                         <span>{item.productId.name}</span>
-                         <span style={{ fontSize: '12px' }}>por {item.productId.brand}</span>
-                         <span>MXN {item.price}</span>
-                         <span>x {item.quantity}</span>
-                       </Box>
-                     </Box>
-                     <Box className="botones" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', color: 'white', mx: 1 }}>
-                      <Button
-                        variant="contained"
-                        color="accent"
-                        onClick={() => handleAddToCart(item.productId._id)} // ✅ función anónima
-                      >
-                        Agregar al carrito
-                      </Button>
-
-                       <Button onClick={()=>{seeProduct(item.productId._id)}} variant='contained' color='accent'>Ver Producto</Button>
-                     </Box>
-                   </Box>
-                   {i < order.items.length - 1 && <hr style={{ width: '100%', borderColor: 'black' }} />}
-                 </React.Fragment>
-                ))}
+          {orders.length === 0 ? (
+          <Box sx={{ backgroundColor: 'primary.main', display: 'flex', flexDirection: 'column', p: 3, justifyContent:'center'}}>
+            <Typography variant="body1" sx={{  textAlign: 'center' }}>
+              No tienes compras registradas aún.
+            </Typography>
+          </Box>
+) : (
+  orders.map((order, idx) => (
+    <Box key={idx}>
+      <p>Compra del {new Date(order.date).toLocaleString()}</p>
+      <p>Estado: pendiente</p>
+      <Box sx={{ backgroundColor: 'primary.main', display: 'flex', flexDirection: 'column', px: 3 }}>
+        {order.items.map((item, i) => (
+          <React.Fragment key={i}>
+            <Box className="ProductPurchaseHistory" sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
+              <Box className="ProductInformation" sx={{ display: 'flex' }}>
+                <Box
+                  component="img"
+                  sx={{ width: '120px', height: '120px', borderRadius: '10px', mr: 2 }}
+                  src={item.productId.image || 'fallback.jpg'}
+                />
+                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                  <span>{item.productId.name}</span>
+                  <span style={{ fontSize: '12px' }}>por {item.productId.brand}</span>
+                  <span>MXN {item.price}</span>
+                  <span>x {item.quantity}</span>
                 </Box>
+              </Box>
+              <Box className="botones" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', color: 'white', mx: 1 }}>
+                <Button
+                  variant="contained"
+                  color="accent"
+                  onClick={() => handleAddToCart(item.productId._id)}
+                  disabled={!!item.productId.deletedAt}
+                >
+                  Agregar al carrito
+                </Button>
+                <Button
+                  onClick={() => seeProduct(item.productId._id)}
+                  variant="contained"
+                  color="accent"
+                  disabled={!!item.productId.deletedAt}
+                >
+                  Ver Producto
+                </Button>
+              </Box>
             </Box>
+            {i < order.items.length - 1 && <hr style={{ width: '100%', borderColor: 'black' }} />}
+          </React.Fragment>
         ))}
-           
+      </Box>
+    </Box>
+  ))
+)}
+
         </Box>
     </Box>
   )
