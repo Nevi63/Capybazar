@@ -109,7 +109,7 @@ function AdvancedSearch() {
     if (sort === 'za') filtered.sort((a, b) => b.name.localeCompare(a.name));
     if (sort === 'dateAsc') filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     if (sort === 'dateDesc') filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    if (sort === 'reviews') filtered.sort((a, b) => b.avgRating - a.avgRating);
+    if (sort === 'reviews') filtered.sort((a, b) => b.rating - a.rating);
 
     setResultsFiltered(filtered);
 }, [results, value2, categoryId, sort]);
