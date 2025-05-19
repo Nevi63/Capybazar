@@ -13,11 +13,11 @@ function orderConfirmation() {
       if(random === 90){
         const random2 = Math.floor(Math.random() * 2) + 1; // 1 o 2
         if(random2 === 1){
-          selectedAudio = 'homero.mp3';
-          console.log( "gano el 50 50 gg");
+          selectedAudio = 'finalfantasy.mp3';
+          console.log( "easter egg 1");
         }else{
-          selectedAudio = 'sefuelaluz.mp3';
-          console.log( "perdio el 50 50 gg");
+          selectedAudio = 'zelda.mp3';
+          console.log( "easter egg 2");
         }
 
       }
