@@ -23,6 +23,7 @@ function AdvancedSearch() {
   const query = useQuery();
   const searchTerm = query.get('query') || '';
   const [results, setResults] = useState([]);
+  const [resultsFiltered, setResultsFiltered] = useState([]);
   const [value2, setValue2] = useState([0, 2000]);
   const [sort, setSort] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -61,7 +62,7 @@ function AdvancedSearch() {
     })
       .then(res => {
         if (!res.ok) throw new Error("Token inválido");
-        setLoading(false)
+        setLoading(false) 
         return res.json();
       })
       .then(data => setResults(data))
@@ -72,6 +73,9 @@ function AdvancedSearch() {
           text: "No autorizado. Inicia sesión nuevamente.",
           icon: "error"
         }).then(() => {
+          localStorage.removeItem('token'); // 🔑 limpia el token inválido
+          localStorage.removeItem('user');
+          localStorage.removeItem('userType');
           navigate('/');
           window.location.reload();
         });
@@ -80,9 +84,36 @@ function AdvancedSearch() {
   
 
   // Triggers para búsqueda
-  useEffect(() => {
+  //  useEffect(() => {
+  //    fetchResults();
+  //  }, [searchTerm, value2, categoryId, sort]);
+
+  useEffect(()=>{
     fetchResults();
-  }, [searchTerm, value2, categoryId, sort]);
+  }, [])
+  useEffect(() => {
+    let filtered = [...results];
+
+    // Filtro por precio
+    filtered = filtered.filter(p =>
+      p.price >= value2[0] && (value2[1] > 1000 || p.price <= value2[1])
+    );
+
+    // Filtro por categoría
+    if (categoryId) {
+      filtered = filtered.filter(p => p.categoryId._id === categoryId);
+    }
+
+    // Ordenamiento
+    if (sort === 'az') filtered.sort((a, b) => a.name.localeCompare(b.name));
+    if (sort === 'za') filtered.sort((a, b) => b.name.localeCompare(a.name));
+    if (sort === 'dateAsc') filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    if (sort === 'dateDesc') filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    if (sort === 'reviews') filtered.sort((a, b) => b.avgRating - a.avgRating);
+
+    setResultsFiltered(filtered);
+}, [results, value2, categoryId, sort]);
+
 
   const handlePriceChange = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) return;
@@ -98,7 +129,7 @@ function AdvancedSearch() {
       setValue2(newValue);
     }
   };
-
+  if (!localStorage.getItem('token')) return null;
   return (
     <Box sx={{ display: 'flex', position: 'relative', height: '100%' }}>
       {/* Filtros laterales */}
@@ -178,7 +209,7 @@ function AdvancedSearch() {
                   <CircularProgress />
                 </Box>
               )}
-              {results && loading ==false && (
+              {resultsFiltered && loading ==false && (
       <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <Box sx={{
           display: "flex",
@@ -192,12 +223,12 @@ function AdvancedSearch() {
           p: 4,
           boxSizing: "border-box",
         }}>
-          {results.length === 0 ? (
+          {resultsFiltered.length === 0 ? (
             <Typography sx={{ mt: 4, color: 'gray', width: '100%', textAlign: 'center' }}>
               No se encontraron resultados.
             </Typography>
           ) : (
-            results.map(product => (
+            resultsFiltered.map(product => (
               <Product key={product._id} product={product} />
             ))
           )}

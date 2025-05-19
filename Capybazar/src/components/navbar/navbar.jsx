@@ -106,7 +106,7 @@ function Navbar() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' && localStorage.getItem('userType')) {
                     navigate(`/advancedSearch?query=${encodeURIComponent(searchTerm)}`);
                   }
                 }}
@@ -117,7 +117,7 @@ function Navbar() {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => navigate(`/advancedSearch?query=${encodeURIComponent(searchTerm)}`)}>
+                      <IconButton onClick={() =>{ if(localStorage.getItem('userType')) navigate(`/advancedSearch?query=${encodeURIComponent(searchTerm)}`)}}>
                         <SearchIcon />
                       </IconButton>
                     </InputAdornment>

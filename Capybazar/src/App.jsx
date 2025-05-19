@@ -41,7 +41,6 @@ function App() {
         {(userType === 'cliente' || userType === 'guest') && (
             <Route element={<GuestClientRoute />}>
                 <Route path="/" element={<Home />} />
-                <Route path="/advancedSearch" element={<AdvancedSearch />} />
                 <Route path="/productInfo/:productId" element={<ProductInformationClient />} />
             </Route>
         )}
@@ -62,6 +61,7 @@ function App() {
         {/* client */}{
           userType==='cliente' &&
           <Route element={<ClientRoute />}>
+            <Route path="/advancedSearch" element={<AdvancedSearch />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<WishList />} />
             <Route path="/purchaseHistory" element={<PurchaseHistory />} />
