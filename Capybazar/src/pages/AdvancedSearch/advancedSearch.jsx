@@ -20,7 +20,8 @@ const minDistance = 10;
 const valuetext = (value) => value > 1000 ? '$+1000' : `$${value}`;
 
 function AdvancedSearch() {
-  const query = useQuery();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
   const searchTerm = query.get('query') || '';
   const [results, setResults] = useState([]);
   const [resultsFiltered, setResultsFiltered] = useState([]);
@@ -88,9 +89,9 @@ function AdvancedSearch() {
   //    fetchResults();
   //  }, [searchTerm, value2, categoryId, sort]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchResults();
-  }, [])
+  }, [location.search]); 
   useEffect(() => {
     let filtered = [...results];
 
