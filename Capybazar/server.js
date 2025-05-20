@@ -2,14 +2,14 @@ import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-
+import logRequestMiddleware from './middlewares/logRequestMiddleware.js'; 
 
 const app = express();
-
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' })); // 🟢 Aumenta el límite a 10 megas
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(logRequestMiddleware);
 
 
 // Conectar a MongoDB

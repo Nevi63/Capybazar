@@ -11,11 +11,18 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // 📌 Endpoint: Crear usuario (Registro) → POST /users/create
+// importamos el logger
+import writeLog from '../utils/writeLog.js'; // ajusta la ruta si tu carpeta cambia
+
+// 📌 Endpoint: Crear usuario (Registro) → POST /users/create
 router.post('/create', async (req, res) => {
+    writeLog('🟡 Inicio del proceso: Crear usuario');
+
     try {
         const { firstName, lastName, email, password, userType, birthdate } = req.body;
 
         if (!birthdate) {
+            writeLog('🔴 Error: Fecha de nacimiento no proporcionada');
             return res.status(400).json({ message: 'La fecha de nacimiento es obligatoria.' });
         }
 
@@ -23,19 +30,18 @@ router.post('/create', async (req, res) => {
         const today = new Date();
 
         if (birthdateObj > today) {
+            writeLog('🔴 Error: Fecha de nacimiento mayor a la fecha actual');
             return res.status(400).json({ message: 'La fecha de nacimiento no puede ser mayor a hoy.' });
         }
 
-        // Verificar si el usuario ya existe
         const existingUser = await User.findOne({ email });
         if (existingUser) {
+            writeLog(`🔴 Error: Usuario ya existente con email ${email}`);
             return res.status(400).json({ message: 'El correo ya está registrado.' });
         }
 
-        // Encriptar la contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Crear un nuevo usuario
         const newUser = new User({
             firstName,
             lastName,
@@ -46,12 +52,18 @@ router.post('/create', async (req, res) => {
         });
 
         await newUser.save();
+
+        writeLog(`🟢 Usuario creado correctamente: ${email}`);
         res.status(201).json({ message: 'Usuario registrado exitosamente' });
 
     } catch (error) {
+        writeLog(`🔴 Error en el servidor al crear usuario: ${error.message}`);
         res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    } finally {
+        writeLog('⚪ Fin del proceso: Crear usuario');
     }
 });
+
 
 // 📌 Endpoint: Iniciar sesión → POST /users/{userId}
 router.post('/:userId', async (req, res) => {
@@ -75,7 +87,7 @@ router.post('/:userId', async (req, res) => {
         const token = jwt.sign(
             { userId: user._id, email: user.email, userType: user.userType },
             process.env.JWT_SECRET,
-            { expiresIn: '2h' }
+            { expiresIn: '1m' }
         );
 
         res.json({ message: 'Inicio de sesión exitoso', token, user });
@@ -203,23 +215,29 @@ router.put('/password/:userId',authMiddleware, async (req, res) => {
 });
 
 // 📌 Baja lógica del usuario → DELETE /users/:userId
-router.delete('/:userId', authMiddleware,async (req, res) => {
+router.delete('/:userId', authMiddleware, async (req, res) => {
+    const { userId } = req.params;
+    writeLog(`🟡 Inicio del proceso: Baja lógica del usuario con ID ${userId}`);
+
     try {
-      const { userId } = req.params;
-  
-      const user = await User.findByIdAndUpdate(
-        userId,
-        { deletedAt: new Date() },
-        { new: true }
-      );
-  
-      if (!user) {
-        return res.status(404).json({ message: 'Usuario no encontrado' });
-      }
-  
-      res.json({ message: 'Usuario dado de baja correctamente', user });
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { deletedAt: new Date() },
+            { new: true }
+        );
+
+        if (!user) {
+            writeLog(`🔴 Error: Usuario no encontrado con ID ${userId}`);
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        writeLog(`🟢 Usuario dado de baja correctamente: ${user.email || userId}`);
+        res.json({ message: 'Usuario dado de baja correctamente', user });
     } catch (error) {
-      res.status(500).json({ message: 'Error en el servidor', error: error.message });
+        writeLog(`🔴 Error en el servidor al dar de baja al usuario ${userId}: ${error.message}`);
+        res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    } finally {
+        writeLog(`⚪ Fin del proceso: Baja lógica del usuario con ID ${userId}`);
     }
 });
   
