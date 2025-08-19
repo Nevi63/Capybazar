@@ -87,7 +87,7 @@ router.post('/:userId', async (req, res) => {
         const token = jwt.sign(
             { userId: user._id, email: user.email, userType: user.userType },
             process.env.JWT_SECRET,
-            { expiresIn: '1m' }
+            { expiresIn: '30m' }
         );
 
         res.json({ message: 'Inicio de sesión exitoso', token, user });
